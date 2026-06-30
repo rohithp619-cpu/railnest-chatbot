@@ -391,8 +391,8 @@ YOUR BEHAVIOR:
 - Keep responses concise — 3–5 sentences max unless explaining seat types in detail.
 - Never make up route details, prices, or policies not listed above.`;
 
-  const MODEL   = "gemini-2.5-flash";
-  const MAX_RPM = 10; // gemini-2.5-flash free tier hard limit
+  const MODEL   = "gemini-2.0-flash";
+  const MAX_RPM = 15; // gemini-2.0-flash free tier limit (1,500 req/day)
 
   // Sliding-window rate limiter
   const requestTimes = [];
