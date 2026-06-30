@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RailNest — Customer Support</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3350;
+      --accent: #4f8ef7;
+      --accent2: #7c5cbf;
+      --green: #3ecf8e;
+      --text: #e8eaf2;
+      --muted: #7a7f9a;
+      --user-bubble: #1e3a5f;
+      --bot-bubble: #1e2235;
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .brand-text h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-text p {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--green);
+      background: rgba(62, 207, 142, 0.1);
+      border: 1px solid rgba(62, 207, 142, 0.2);
+      border-radius: 20px;
+      padding: 5px 12px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* API Key Banner */
+    #api-banner {
+      background: linear-gradient(135deg, rgba(79,142,247,0.15), rgba(124,92,191,0.15));
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    #api-banner.hidden { display: none; }
+
+    #api-banner label {
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    #api-key-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: monospace;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #api-key-input:focus { border-color: var(--accent); }
+
+    #save-key-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    #save-key-btn:hover { opacity: 0.85; }
+
+    #change-key-btn {
+      font-size: 12px;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+    }
+
+    /* Chat area */
+    #chat-window {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    #chat-window::-webkit-scrollbar { width: 4px; }
+    #chat-window::-webkit-scrollbar-track { background: transparent; }
+    #chat-window::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .message {
+      display: flex;
+      gap: 10px;
+      max-width: 780px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user { align-self: flex-end; flex-direction: row-reverse; }
+    .message.bot { align-self: flex-start; }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .avatar.bot {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+    }
+
+    .avatar.user {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+    }
+
+    .bubble {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 600px;
+    }
+
+    .message.bot .bubble {
+      background: var(--bot-bubble);
+      border: 1px solid var(--border);
+      border-top-left-radius: 4px;
+    }
+
+    .message.user .bubble {
+      background: var(--user-bubble);
+      border: 1px solid rgba(79,142,247,0.3);
+      border-top-right-radius: 4px;
+    }
+
+    .bubble p + p { margin-top: 8px; }
+    .bubble ul, .bubble ol { padding-left: 20px; margin-top: 6px; }
+    .bubble li { margin-bottom: 4px; }
+    .bubble strong { color: #c8d0f0; }
+    .bubble code {
+      background: rgba(255,255,255,0.08);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+    }
+
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 14px 16px;
+    }
+
+    .typing-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--muted);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-6px); }
+    }
+
+    /* Suggested prompts */
+    #suggestions {
+      padding: 0 20px 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    #suggestions.hidden { display: none; }
+
+    .suggestion-chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .suggestion-chip:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    /* Input bar */
+    #input-bar {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+
+    #user-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-size: 14px;
+      resize: none;
+      outline: none;
+      max-height: 140px;
+      line-height: 1.5;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    #user-input:focus { border-color: var(--accent); }
+    #user-input::placeholder { color: var(--muted); }
+
+    #send-btn {
+      width: 44px;
+      height: 44px;
+      background: var(--accent);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s, transform 0.1s;
+      flex-shrink: 0;
+    }
+
+    #send-btn:hover { opacity: 0.85; }
+    #send-btn:active { transform: scale(0.95); }
+    #send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    #send-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: white;
+    }
+
+    .error-msg {
+      color: #f87171;
+      font-size: 13px;
+      padding: 8px 12px;
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.2);
+      border-radius: 8px;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .bubble { max-width: 90vw; }
+      #suggestions { gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-icon">🚂</div>
+    <div class="brand-text">
+      <h1>RailNest</h1>
+      <p>Scenic Heritage Rail Journeys</p>
+    </div>
+  </div>
+  <div class="status-badge">
+    <span class="status-dot"></span>
+    Remy is online
+  </div>
+</header>
+
+<div id="api-banner">
+  <label>Anthropic API Key</label>
+  <input id="api-key-input" type="password" placeholder="sk-ant-..." autocomplete="off" />
+  <button id="save-key-btn">Connect</button>
+</div>
+
+<div id="chat-window">
+  <!-- Messages injected here -->
+</div>
+
+<div id="suggestions">
+  <span class="suggestion-chip" onclick="sendSuggestion(this)">What's the difference between seat types?</span>
+  <span class="suggestion-chip" onclick="sendSuggestion(this)">I want panoramic views — what should I book?</span>
+  <span class="suggestion-chip" onclick="sendSuggestion(this)">Can I change my seat after booking?</span>
+  <span class="suggestion-chip" onclick="sendSuggestion(this)">What routes do you offer?</span>
+</div>
+
+<div id="input-bar">
+  <textarea id="user-input" placeholder="Ask Remy anything about your journey…" rows="1"></textarea>
+  <button id="send-btn" disabled>
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+  const SYSTEM_PROMPT = `You are Remy, the friendly customer service chatbot for RailNest — a boutique train ticket booking service specializing in scenic heritage railways across the American Southwest and Pacific Coast.
+
+RailNest offers these routes:
+- Wine Country Express: Napa Valley → Santa Barbara (day trip, 6 hrs)
+- Canyon Rim Overnight: Flagstaff → Moab (overnight, 14 hrs)
+- Pacific Sunset Route: San Francisco → San Diego (day trip, 9 hrs)
+- Desert Bloom Daytrip: Tucson → Sedona (day trip, 4 hrs)
+
+SEAT TYPES — explain these clearly, as 80% of complaints stem from confusion here:
+- Standard Window Seat: Individual reclining seat beside a standard double-pane window. NOT panoramic. Faces forward on most cars, but Heritage Coach cars have some backward-facing seats.
+- Observation Berth: Private enclosed mini-cabin for 2, floor-to-ceiling panoramic curved glass on three sides. Premium tier. Best for couples or solo travelers wanting the view.
+- Lounge Car Seat: Open shared car with a 180° glass dome ceiling. Social atmosphere, no assigned seats, first-come first-served within the car. Great for meeting fellow travelers.
+- Sleeper Cabin: Available on overnight routes only (Canyon Rim). Converts from day seating to two bunk beds at night. Has a small porthole-style side window only — not panoramic.
+- Heritage Coach: Vintage restored 1940s-era bench seating. Charming and atmospheric. Windows do not open; every other row faces backward. Best for rail enthusiasts who love the historic feel.
+
+POLICIES:
+- Seat/cabin changes: Free if requested 48+ hours before departure. $25 fee for 24–48 hours before. No changes within 24 hours.
+- Refunds: 100% refund if cancelled 7+ days before departure. 50% refund 3–7 days before. No refund under 3 days.
+- Booking: railnest.com or 1-800-RAILNEST (Mon–Fri 8am–8pm PT)
+- Group bookings (6+): 10% discount, contact groups@railnest.com
+
+YOUR BEHAVIOR:
+- Always ask clarifying questions before recommending a seat type: Do they want privacy or social? Day or overnight? Views or historic charm?
+- Be warm and enthusiastic about rail travel. Use occasional gentle train idioms ("let's get you on the right track", "all aboard", etc.) but don't overdo it.
+- For complaints about seat types after booking: empathize first, then apply the change/refund policy firmly but kindly.
+- Keep responses concise — 3–5 sentences max unless explaining seat types in detail.
+- Never make up route details, prices, or policies not listed above. Say you'll connect them with a human agent for anything outside your knowledge.`;
+
+  const MODEL = "claude-haiku-4-5-20251001";
+  const API_URL = "https://api.anthropic.com/v1/messages";
+
+  let apiKey = localStorage.getItem("railnest_api_key") || "";
+  let messages = [];
+  let isStreaming = false;
+
+  const chatWindow = document.getElementById("chat-window");
+  const userInput = document.getElementById("user-input");
+  const sendBtn = document.getElementById("send-btn");
+  const apiBanner = document.getElementById("api-banner");
+  const apiKeyInput = document.getElementById("api-key-input");
+  const saveKeyBtn = document.getElementById("save-key-btn");
+  const suggestions = document.getElementById("suggestions");
+
+  // Init
+  if (apiKey) {
+    apiBanner.classList.add("hidden");
+    sendBtn.disabled = false;
+    addBotMessage("All aboard! I'm Remy, your RailNest journey guide 🚂\n\nWhether you're planning a trip or need help with an existing booking, I'm here to keep things on track. What can I help you with today?");
+  } else {
+    addBotMessage("Welcome to RailNest! I'm Remy, your personal journey concierge.\n\nTo get started, please enter your Anthropic API key above so I can assist you.");
+    sendBtn.disabled = true;
+  }
+
+  // API Key handling
+  saveKeyBtn.addEventListener("click", () => {
+    const key = apiKeyInput.value.trim();
+    if (!key.startsWith("sk-ant-")) {
+      apiKeyInput.style.borderColor = "#f87171";
+      return;
+    }
+    apiKey = key;
+    localStorage.setItem("railnest_api_key", key);
+    apiBanner.classList.add("hidden");
+    sendBtn.disabled = false;
+    clearChat();
+    addBotMessage("All aboard! I'm Remy, your RailNest journey guide 🚂\n\nWhether you're planning a trip or need help with an existing booking, I'm here to keep things on track. What can I help you with today?");
+  });
+
+  apiKeyInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") saveKeyBtn.click();
+  });
+
+  // Add a small "change key" link after saving — append to banner when reconnecting
+  function showApiKeyChange() {
+    if (apiBanner.querySelector("#change-key-btn")) return;
+    const btn = document.createElement("button");
+    btn.id = "change-key-btn";
+    btn.textContent = "Change key";
+    btn.addEventListener("click", () => {
+      apiBanner.classList.remove("hidden");
+      apiKeyInput.value = "";
+      apiKeyInput.focus();
+    });
+    // We'll just expose it via console for now; the banner re-appears on page load if needed
+  }
+
+  // Input auto-resize
+  userInput.addEventListener("input", () => {
+    userInput.style.height = "auto";
+    userInput.style.height = Math.min(userInput.scrollHeight, 140) + "px";
+  });
+
+  userInput.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      if (!isStreaming) handleSend();
+    }
+  });
+
+  sendBtn.addEventListener("click", handleSend);
+
+  function sendSuggestion(el) {
+    userInput.value = el.textContent;
+    suggestions.classList.add("hidden");
+    handleSend();
+  }
+
+  async function handleSend() {
+    const text = userInput.value.trim();
+    if (!text || isStreaming || !apiKey) return;
+
+    suggestions.classList.add("hidden");
+    userInput.value = "";
+    userInput.style.height = "auto";
+
+    addUserMessage(text);
+    messages.push({ role: "user", content: text });
+
+    await streamResponse();
+  }
+
+  async function streamResponse() {
+    isStreaming = true;
+    sendBtn.disabled = true;
+
+    const typingEl = addTypingIndicator();
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json",
+          "anthropic-dangerous-direct-browser-access": "true",
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          max_tokens: 1024,
+          system: SYSTEM_PROMPT,
+          messages: messages,
+          stream: true,
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        typingEl.remove();
+        addErrorMessage(err.error?.message || "API error — check your key and try again.");
+        isStreaming = false;
+        sendBtn.disabled = false;
+        return;
+      }
+
+      typingEl.remove();
+
+      let fullText = "";
+      const botBubble = addBotMessage("", true);
+      const bubbleText = botBubble.querySelector(".bubble-text");
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop();
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const data = line.slice(6).trim();
+          if (data === "[DONE]") continue;
+          try {
+            const parsed = JSON.parse(data);
+            if (parsed.type === "content_block_delta" && parsed.delta?.type === "text_delta") {
+              fullText += parsed.delta.text;
+              bubbleText.innerHTML = markdownToHtml(fullText);
+              chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+          } catch (_) {}
+        }
+      }
+
+      messages.push({ role: "assistant", content: fullText });
+
+    } catch (err) {
+      typingEl?.remove();
+      addErrorMessage("Network error — please check your connection.");
+    }
+
+    isStreaming = false;
+    sendBtn.disabled = false;
+    userInput.focus();
+  }
+
+  function addUserMessage(text) {
+    const el = document.createElement("div");
+    el.className = "message user";
+    el.innerHTML = `
+      <div class="avatar user">👤</div>
+      <div class="bubble">${escapeHtml(text)}</div>
+    `;
+    chatWindow.appendChild(el);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    return el;
+  }
+
+  function addBotMessage(text, streaming = false) {
+    const el = document.createElement("div");
+    el.className = "message bot";
+    el.innerHTML = `
+      <div class="avatar bot">🚂</div>
+      <div class="bubble"><span class="bubble-text">${streaming ? "" : markdownToHtml(text)}</span></div>
+    `;
+    chatWindow.appendChild(el);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    return el;
+  }
+
+  function addTypingIndicator() {
+    const el = document.createElement("div");
+    el.className = "message bot";
+    el.innerHTML = `
+      <div class="avatar bot">🚂</div>
+      <div class="bubble typing-indicator">
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+      </div>
+    `;
+    chatWindow.appendChild(el);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    return el;
+  }
+
+  function addErrorMessage(msg) {
+    const el = document.createElement("div");
+    el.className = "message bot";
+    el.innerHTML = `
+      <div class="avatar bot">🚂</div>
+      <div class="bubble error-msg">${escapeHtml(msg)}</div>
+    `;
+    chatWindow.appendChild(el);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+
+  function clearChat() {
+    chatWindow.innerHTML = "";
+    messages = [];
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function markdownToHtml(text) {
+    return text
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.+?)\*/g, "<em>$1</em>")
+      .replace(/`(.+?)`/g, "<code>$1</code>")
+      .replace(/^### (.+)$/gm, "<strong>$1</strong>")
+      .replace(/^## (.+)$/gm, "<strong>$1</strong>")
+      .replace(/^- (.+)$/gm, "<li>$1</li>")
+      .replace(/(<li>.*<\/li>)/gs, (match) => `<ul>${match}</ul>`)
+      .replace(/\n\n/g, "</p><p>")
+      .replace(/\n/g, "<br>")
+      .replace(/^(?!<[upli]|<\/[upli])(.+)/, "<p>$1</p>");
+  }
+</script>
+</body>
+</html>
