@@ -392,10 +392,12 @@ YOUR BEHAVIOR:
 - Never make up route details, prices, or policies not listed above.`;
 
   const MODEL   = "gemini-2.5-flash";
-  const MAX_RPM = 15;
+  const MAX_RPM = 10; // gemini-2.5-flash free tier hard limit
 
-  // Simple sliding-window rate limiter
+  // Sliding-window rate limiter
   const requestTimes = [];
+  let rateBarTimer = null;
+
   function canSend() {
     const now = Date.now();
     while (requestTimes.length && now - requestTimes[0] > 60000) requestTimes.shift();
@@ -405,6 +407,21 @@ YOUR BEHAVIOR:
   function waitSeconds() {
     if (requestTimes.length < MAX_RPM) return 0;
     return Math.ceil((60000 - (Date.now() - requestTimes[0])) / 1000);
+  }
+  function showRateBar(msg) {
+    clearInterval(rateBarTimer);
+    rateBar.style.display = "block";
+    rateBar.textContent = msg;
+    // countdown + auto-dismiss
+    rateBarTimer = setInterval(() => {
+      const secs = waitSeconds();
+      if (secs <= 0) {
+        clearInterval(rateBarTimer);
+        rateBar.style.display = "none";
+      } else {
+        rateBar.textContent = `⚠ Rate limit — sending again in ${secs}s (free tier: ${MAX_RPM} req/min).`;
+      }
+    }, 1000);
   }
 
   let chat = null;
@@ -496,11 +513,11 @@ YOUR BEHAVIOR:
     if (!text || isStreaming || !chat) return;
 
     if (!canSend()) {
-      rateBar.style.display = "block";
-      rateBar.textContent = `⚠ Free tier limit reached — please wait ${waitSeconds()}s before sending again.`;
+      showRateBar(`⚠ Rate limit — sending again in ${waitSeconds()}s (free tier: ${MAX_RPM} req/min).`);
       return;
     }
 
+    clearInterval(rateBarTimer);
     rateBar.style.display = "none";
     suggestions.classList.add("hidden");
     userInput.value = "";
@@ -535,8 +552,7 @@ YOUR BEHAVIOR:
       typingEl?.remove();
       const msg = String(err?.message ?? "");
       if (msg.includes("429") || msg.toLowerCase().includes("quota") || msg.toLowerCase().includes("rate")) {
-        rateBar.style.display = "block";
-        rateBar.textContent = "⚠ Rate limit hit — wait a moment and try again (free tier: 15 req/min).";
+        showRateBar(`⚠ Rate limit hit — sending again in ${waitSeconds()}s (free tier: ${MAX_RPM} req/min).`);
       } else if (msg.includes("400") || msg.includes("API_KEY") || msg.includes("401") || msg.includes("403")) {
         addErrorMessage("Invalid API key — click the gear icon ⚙ to update it.");
       } else {
