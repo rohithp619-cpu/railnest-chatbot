@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RailNest — Heritage rail journeys across the American West</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚂</text></svg>">
+
+  <meta name="description" content="Curated heritage rail expeditions across the American Southwest and Pacific Coast. Vintage cars, canyon rims, coastal sunsets, and wine country routes.">
+  <meta property="og:title" content="RailNest — Heritage rail journeys">
+  <meta property="og:description" content="Curated heritage rail expeditions across the American Southwest and Pacific Coast.">
+  <meta property="og:type" content="website">
+  <!-- <meta property="og:image" content="assets/hero-canyon-train.jpg"> -->
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── TOKENS ────────────────────────────────────────────── */
+    :root {
+      --canvas:  #f9f7f2;
+      --sand:    #f0ebe0;
+      --ink:     #1e1a14;
+      --ink-80:  rgba(30,26,20,0.80);
+      --mahogany:#4a1e12;
+      --mah-fg:  #f7f2eb;
+      --brass:   #9a7c3a;
+      --muted:   #7a6f62;
+      --border:  #ddd6c8;
+      --radius:  10px;
+    }
+
+    /* ── RESET ─────────────────────────────────────────────── */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+    body{
+      font-family:'Inter',system-ui,sans-serif;
+      background:var(--canvas);color:var(--ink);
+      line-height:1.65;min-height:100vh;overflow-x:hidden;
+    }
+    img{display:block;max-width:100%;height:auto}
+    a{color:inherit}
+    h1,h2,h3,h4{font-family:'Fraunces',ui-serif,Georgia,serif;font-feature-settings:"ss01"}
+
+    /* ── LAYOUT ────────────────────────────────────────────── */
+    .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+    .wrap-sm{max-width:780px;margin:0 auto;padding:0 24px}
+
+    /* ── NAV ───────────────────────────────────────────────── */
+    nav{
+      position:sticky;top:0;z-index:50;
+      border-bottom:1px solid rgba(221,214,200,.7);
+      background:rgba(249,247,242,.88);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    }
+    .nav-inner{
+      max-width:1200px;margin:0 auto;padding:0 24px;
+      height:64px;display:flex;align-items:center;justify-content:space-between;
+    }
+    .nav-logo{
+      font-family:'Fraunces',serif;font-size:21px;
+      text-decoration:none;color:var(--ink);letter-spacing:-.3px;
+    }
+    .nav-links{display:flex;gap:32px;font-size:14px;color:var(--muted)}
+    .nav-links a{text-decoration:none;transition:color .2s}
+    .nav-links a:hover{color:var(--ink)}
+    .nav-cta{
+      display:inline-flex;align-items:center;
+      background:var(--mahogany);color:var(--mah-fg);
+      font-size:13px;font-weight:500;padding:9px 18px;
+      border-radius:40px;text-decoration:none;transition:opacity .2s;
+    }
+    .nav-cta:hover{opacity:.88}
+    @media(max-width:680px){.nav-links{display:none}}
+
+    /* ── HERO ──────────────────────────────────────────────── */
+    #hero{padding:52px 24px 80px}
+    .hero-wrap{max-width:1200px;margin:0 auto}
+    .hero-text{max-width:720px;margin-bottom:44px}
+    .eyebrow{
+      display:block;font-size:11px;font-weight:500;
+      letter-spacing:.22em;text-transform:uppercase;
+      color:var(--brass);margin-bottom:20px;
+    }
+    h1{
+      font-size:clamp(40px,6.5vw,76px);line-height:1.02;
+      letter-spacing:-.5px;color:var(--ink);margin-bottom:20px;
+    }
+    .hero-sub{font-size:18px;color:var(--muted);max-width:540px;line-height:1.7}
+
+    .hero-img-wrap{
+      position:relative;overflow:hidden;
+      border-radius:18px;box-shadow:0 1px 0 rgba(0,0,0,.06);
+    }
+    .hero-img-wrap img{
+      width:100%;aspect-ratio:21/10;object-fit:cover;display:block;
+    }
+    .hero-img-overlay{
+      position:absolute;inset:0;
+      background:linear-gradient(to top,rgba(0,0,0,.35) 0%,transparent 55%);
+    }
+    .hero-img-caption{
+      position:absolute;bottom:24px;left:24px;right:24px;
+      display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;
+    }
+    .hero-caption-label{font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:rgba(247,242,235,.75);margin-bottom:4px}
+    .hero-caption-name{font-family:'Fraunces',serif;font-size:clamp(20px,3vw,30px);color:var(--mah-fg)}
+    .hero-caption-btn{
+      display:inline-flex;align-items:center;
+      background:rgba(249,247,242,.95);color:var(--ink);
+      font-size:13px;font-weight:500;padding:10px 20px;
+      border-radius:40px;text-decoration:none;transition:background .2s;white-space:nowrap;
+    }
+    .hero-caption-btn:hover{background:#fff}
+
+    .stats-strip{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:32px;
+      margin-top:44px;padding-top:32px;border-top:1px solid var(--border);
+    }
+    .stat-n{font-family:'Fraunces',serif;font-size:32px;color:var(--mahogany)}
+    .stat-l{margin-top:4px;font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--muted)}
+    @media(max-width:580px){.stats-strip{grid-template-columns:repeat(2,1fr)}}
+
+    /* ── JOURNEYS ──────────────────────────────────────────── */
+    #journeys{background:var(--sand);padding:80px 24px}
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;
+      gap:20px;margin-bottom:52px;flex-wrap:wrap;
+    }
+    h2{font-size:clamp(28px,4.5vw,48px);color:var(--ink);line-height:1.1}
+    .view-all{
+      font-size:13px;font-weight:500;color:var(--ink);
+      text-decoration:underline;text-decoration-color:var(--border);
+      text-underline-offset:6px;transition:text-decoration-color .2s;white-space:nowrap;
+    }
+    .view-all:hover{text-decoration-color:var(--brass)}
+
+    .journey-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:48px 32px}
+    @media(max-width:680px){.journey-grid{grid-template-columns:1fr}}
+
+    .journey-card{}
+    .journey-img{
+      overflow:hidden;border-radius:12px;
+      box-shadow:0 1px 0 rgba(0,0,0,.05);
+    }
+    .journey-img img{
+      width:100%;aspect-ratio:4/3;object-fit:cover;
+      transition:transform .7s ease;
+    }
+    .journey-card:hover .journey-img img{transform:scale(1.03)}
+    .journey-meta{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-top:20px}
+    .journey-name{font-family:'Fraunces',serif;font-size:24px;color:var(--ink)}
+    .journey-dur{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted)}
+    .journey-region{font-size:13px;color:var(--muted);margin-top:4px}
+    .journey-blurb{font-size:15px;line-height:1.65;color:var(--ink-80);margin-top:12px;max-width:480px}
+    .journey-foot{
+      display:flex;align-items:center;gap:16px;
+      margin-top:18px;padding-top:14px;
+      border-top:1px solid rgba(221,214,200,.7);
+      font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted);
+    }
+    .journey-dot{width:4px;height:4px;border-radius:50%;background:var(--border)}
+    .journey-reserve{margin-left:auto;font-weight:500;color:var(--mahogany)}
+
+    /* ── FLEET ─────────────────────────────────────────────── */
+    #fleet{padding:80px 24px}
+    .fleet-grid{
+      display:grid;grid-template-columns:1fr 1fr;gap:56px;
+      align-items:center;max-width:1200px;margin:0 auto;
+    }
+    @media(max-width:780px){.fleet-grid{grid-template-columns:1fr;gap:40px}}
+
+    .fleet-copy .eyebrow{margin-bottom:16px}
+    .fleet-copy h2{margin-bottom:20px;max-width:440px}
+    .fleet-copy p{font-size:17px;color:var(--muted);line-height:1.7;max-width:440px}
+
+    .fleet-dl{margin-top:36px;display:flex;flex-direction:column;gap:0}
+    .fleet-item{
+      display:flex;gap:20px;padding:20px 0;
+      border-top:1px solid var(--border);
+    }
+    .fleet-item:first-child{border-top:none;padding-top:0}
+    .fleet-num{font-family:'Fraunces',serif;font-size:13px;color:var(--brass);padding-top:2px;min-width:20px}
+    .fleet-title{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:4px}
+    .fleet-desc{font-size:13px;color:var(--muted);line-height:1.6}
+
+    .fleet-cta{
+      display:inline-flex;align-items:center;gap:8px;
+      margin-top:32px;background:var(--ink);color:var(--canvas);
+      font-size:13px;font-weight:500;padding:11px 20px;
+      border-radius:40px;text-decoration:none;transition:opacity .2s;
+    }
+    .fleet-cta:hover{opacity:.85}
+
+    .fleet-imgs{display:flex;flex-direction:column;gap:14px}
+    .fleet-img-main{overflow:hidden;border-radius:12px;box-shadow:0 1px 0 rgba(0,0,0,.06)}
+    .fleet-img-main img{width:100%;aspect-ratio:4/5;object-fit:cover}
+    .fleet-img-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .fleet-img-sm{overflow:hidden;border-radius:12px;box-shadow:0 1px 0 rgba(0,0,0,.06)}
+    .fleet-img-sm img{width:100%;aspect-ratio:1;object-fit:cover}
+
+    /* ── PHILOSOPHY ────────────────────────────────────────── */
+    #philosophy{background:var(--mahogany);padding:96px 24px;color:var(--mah-fg);text-align:center}
+    #philosophy .eyebrow{color:var(--brass);margin-bottom:20px}
+    #philosophy h2{
+      font-size:clamp(26px,4vw,46px);line-height:1.22;
+      max-width:700px;margin:0 auto;color:var(--mah-fg);
+    }
+    .phil-rule{width:48px;height:1px;background:rgba(154,124,58,.6);margin:36px auto}
+    .phil-body{font-size:17px;line-height:1.75;opacity:.85;max-width:560px;margin:0 auto}
+    .phil-tags{
+      display:flex;flex-wrap:wrap;justify-content:center;
+      gap:10px 36px;margin-top:44px;
+      font-size:11px;text-transform:uppercase;letter-spacing:.2em;opacity:.65;
+    }
+
+    /* ── FAQ ───────────────────────────────────────────────── */
+    #faq{padding:80px 24px}
+    #faq .wrap-sm .eyebrow{margin-bottom:16px}
+    #faq .wrap-sm h2{margin-bottom:40px;max-width:520px}
+    .faq-list{display:flex;flex-direction:column;gap:0}
+    .faq-item{border-top:1px solid var(--border)}
+    .faq-item:last-child{border-bottom:1px solid var(--border)}
+    .faq-q{
+      width:100%;background:none;border:none;padding:20px 0;
+      text-align:left;font-size:15px;font-weight:500;color:var(--ink);
+      display:flex;justify-content:space-between;align-items:center;gap:16px;
+      cursor:pointer;font-family:'Inter',sans-serif;
+    }
+    .faq-q:hover{color:var(--mahogany)}
+    .faq-chevron{font-size:11px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+    .faq-item.open .faq-chevron{transform:rotate(180deg)}
+    .faq-a{
+      display:none;padding-bottom:20px;
+      font-size:14px;color:var(--muted);line-height:1.75;
+    }
+    .faq-item.open .faq-a{display:block}
+
+    /* ── QUALIFIER ─────────────────────────────────────────── */
+    #qualifier{background:var(--sand);padding:80px 24px}
+    #qualifier .wrap-sm .eyebrow{margin-bottom:16px}
+    #qualifier .wrap-sm h2{margin-bottom:36px;max-width:520px}
+    .q-box{
+      background:var(--canvas);border:1px solid var(--border);
+      border-radius:16px;padding:40px;
+    }
+    .q-pips{display:flex;gap:6px;margin-bottom:28px}
+    .q-pip{height:2px;flex:1;background:var(--border);border-radius:2px;transition:background .3s}
+    .q-pip.done{background:var(--mahogany)}
+    .q-pip.cur{background:rgba(74,30,18,.4)}
+    .q-num{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px}
+    .q-text{font-family:'Fraunces',serif;font-size:22px;color:var(--ink);margin-bottom:24px;line-height:1.3}
+    .q-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+    .q-opt{
+      display:flex;align-items:center;gap:14px;padding:14px 18px;
+      background:transparent;border:1px solid var(--border);border-radius:var(--radius);
+      cursor:pointer;text-align:left;color:var(--ink);font-size:14px;
+      font-family:'Inter',sans-serif;transition:all .15s;
+    }
+    .q-opt:hover{border-color:var(--brass);background:rgba(154,124,58,.05)}
+    .q-opt.sel{border-color:var(--mahogany);background:rgba(74,30,18,.05);color:var(--ink)}
+    .q-letter{
+      width:26px;height:26px;border-radius:50%;border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      font-size:11px;font-weight:600;color:var(--muted);flex-shrink:0;transition:all .15s;
+    }
+    .q-opt.sel .q-letter{background:var(--mahogany);border-color:var(--mahogany);color:var(--mah-fg)}
+    .q-nav{display:flex;gap:8px;justify-content:flex-end}
+    .q-btn{
+      padding:10px 20px;border-radius:40px;font-size:13px;
+      font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;
+    }
+    .q-back{background:none;border:1px solid var(--border);color:var(--muted)}
+    .q-back:hover{border-color:var(--brass);color:var(--ink)}
+    .q-fwd{background:var(--mahogany);border:none;color:var(--mah-fg)}
+    .q-fwd:hover{opacity:.88}
+    .q-fwd:disabled{opacity:.35;cursor:not-allowed}
+
+    .q-result{display:none;animation:fadeUp .3s ease}
+    .q-result.show{display:block}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .res-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+    .res-emoji{font-size:36px}
+    .res-tag{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--brass);margin-bottom:4px}
+    .res-name{font-family:'Fraunces',serif;font-size:26px;color:var(--ink)}
+    .res-body{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:22px}
+    .res-cta{
+      display:inline-flex;align-items:center;gap:8px;
+      background:var(--mahogany);color:var(--mah-fg);font-weight:500;font-size:13px;
+      padding:11px 22px;border-radius:40px;text-decoration:none;
+      border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .2s;
+    }
+    .res-cta:hover{opacity:.88}
+    .res-reset{
+      background:none;border:1px solid var(--border);color:var(--muted);
+      font-size:13px;padding:10px 16px;border-radius:40px;cursor:pointer;
+      margin-left:8px;font-family:'Inter',sans-serif;transition:all .15s;
+    }
+    .res-reset:hover{border-color:var(--brass);color:var(--ink)}
+    @media(max-width:600px){.q-box{padding:22px}}
+
+    /* ── FOOTER ────────────────────────────────────────────── */
+    #dispatch{border-top:1px solid var(--border);background:var(--canvas);padding:72px 24px}
+    .foot-grid{
+      display:grid;grid-template-columns:1fr 1fr 1fr;gap:48px;
+      max-width:1200px;margin:0 auto;
+    }
+    @media(max-width:780px){.foot-grid{grid-template-columns:1fr;gap:36px}}
+    .foot-brand{font-family:'Fraunces',serif;font-size:24px;color:var(--ink);display:block;margin-bottom:14px}
+    .foot-tagline{font-size:14px;color:var(--muted);max-width:240px;line-height:1.6}
+    .foot-col-label{
+      font-size:11px;font-weight:600;text-transform:uppercase;
+      letter-spacing:.2em;color:var(--muted);margin-bottom:16px;
+    }
+    .foot-links{list-style:none;display:flex;flex-direction:column;gap:10px}
+    .foot-links a{font-size:14px;color:var(--ink-80);text-decoration:none;transition:color .2s}
+    .foot-links a:hover{color:var(--mahogany)}
+    .foot-links-row{display:grid;grid-template-columns:1fr 1fr;gap:0}
+    .foot-dispatch p{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6}
+    .foot-form{display:flex;gap:8px}
+    .foot-input{
+      flex:1;border:1px solid var(--border);border-radius:40px;
+      background:var(--sand);padding:9px 16px;font-size:13px;
+      outline:none;transition:border-color .2s,box-shadow .2s;
+      font-family:'Inter',sans-serif;color:var(--ink);
+    }
+    .foot-input:focus{border-color:var(--brass);box-shadow:0 0 0 3px rgba(154,124,58,.15)}
+    .foot-input::placeholder{color:var(--muted)}
+    .foot-submit{
+      background:var(--mahogany);color:var(--mah-fg);border:none;
+      border-radius:40px;padding:9px 18px;font-size:13px;font-weight:500;
+      cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .2s;white-space:nowrap;
+    }
+    .foot-submit:hover{opacity:.88}
+    .foot-bottom{
+      max-width:1200px;margin:56px auto 0;padding-top:20px;
+      border-top:1px solid var(--border);
+      display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+      font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--muted);
+    }
+    .foot-bottom-links{display:flex;gap:24px}
+    .foot-bottom-links a{color:var(--muted);text-decoration:none;transition:color .2s}
+    .foot-bottom-links a:hover{color:var(--ink)}
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">RailNest</a>
+    <div class="nav-links">
+      <a href="#journeys">Journeys</a>
+      <a href="#fleet">The Fleet</a>
+      <a href="#philosophy">Philosophy</a>
+      <a href="#dispatch">Dispatch</a>
+    </div>
+    <a href="#journeys" class="nav-cta">Book a journey</a>
+  </div>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-wrap">
+    <div class="hero-text">
+      <span class="eyebrow">Est. 1942 · Heritage rail collective</span>
+      <h1>The art of the<br>slow arrival.</h1>
+      <p class="hero-sub">Curated expeditions across the American Southwest and Pacific Coast, aboard restored heritage railcars where the passage is as considered as the destination.</p>
+    </div>
+
+    <div class="hero-img-wrap">
+      <img src="assets/hero-canyon-train.jpg" alt="Vintage train winding through a desert canyon at golden hour" loading="eager">
+      <div class="hero-img-overlay"></div>
+      <div class="hero-img-caption">
+        <div>
+          <p class="hero-caption-label">Now departing</p>
+          <p class="hero-caption-name">The Silver Meteor · Arizona Rim</p>
+        </div>
+        <a href="#journeys" class="hero-caption-btn">View October schedule →</a>
+      </div>
+    </div>
+
+    <div class="stats-strip">
+      <div><p class="stat-n">12</p><p class="stat-l">Heritage operators</p></div>
+      <div><p class="stat-n">4,200+</p><p class="stat-l">Miles preserved</p></div>
+      <div><p class="stat-n">1920s</p><p class="stat-l">Fleet vintage</p></div>
+      <div><p class="stat-n">38</p><p class="stat-l">Curated routes</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── JOURNEYS ──────────────────────────────────────────────── -->
+<section id="journeys">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Heritage routes</span>
+        <h2>Selected expeditions</h2>
+      </div>
+      <a href="#" class="view-all">View all 38 routes</a>
+    </div>
+
+    <div class="journey-grid">
+      <article class="journey-card">
+        <div class="journey-img"><img src="assets/journey-verde-canyon.jpg" alt="Verde Canyon Heritage" loading="lazy"></div>
+        <div class="journey-meta">
+          <h3 class="journey-name">Verde Canyon Heritage</h3>
+          <span class="journey-dur">4 hours</span>
+        </div>
+        <p class="journey-region">Sedona, Arizona</p>
+        <p class="journey-blurb">Through the red-rock riparian corridor only reachable by rail. Open-air viewing cars and bald eagle sightings each January.</p>
+        <div class="journey-foot">
+          <span>Year-round</span>
+          <span class="journey-dot"></span>
+          <span>40 mi</span>
+          <span class="journey-reserve">Reserve →</span>
+        </div>
+      </article>
+
+      <article class="journey-card">
+        <div class="journey-img"><img src="assets/journey-coast-starlight.jpg" alt="Coast Starlight Heritage" loading="lazy"></div>
+        <div class="journey-meta">
+          <h3 class="journey-name">Coast Starlight Heritage</h3>
+          <span class="journey-dur">2 days</span>
+        </div>
+        <p class="journey-region">San Luis Obispo, California</p>
+        <p class="journey-blurb">Overnight Pullman sleepers tracking the Pacific edge from the Central Coast cliffs into the Cascade foothills.</p>
+        <div class="journey-foot">
+          <span>Spring – Fall</span>
+          <span class="journey-dot"></span>
+          <span>470 mi</span>
+          <span class="journey-reserve">Reserve →</span>
+        </div>
+      </article>
+
+      <article class="journey-card">
+        <div class="journey-img"><img src="assets/journey-napa-wine.jpg" alt="Napa Valley Wine Train" loading="lazy"></div>
+        <div class="journey-meta">
+          <h3 class="journey-name">Napa Valley Wine Train</h3>
+          <span class="journey-dur">3 hours</span>
+        </div>
+        <p class="journey-region">Napa, California</p>
+        <p class="journey-blurb">Restored 1917 Pullman dining cars through St. Helena vineyards. Six-course tasting menu paired in the Vista Dome.</p>
+        <div class="journey-foot">
+          <span>Year-round</span>
+          <span class="journey-dot"></span>
+          <span>36 mi</span>
+          <span class="journey-reserve">Reserve →</span>
+        </div>
+      </article>
+
+      <article class="journey-card">
+        <div class="journey-img"><img src="assets/journey-grand-canyon.jpg" alt="Grand Canyon Rim Overnight" loading="lazy"></div>
+        <div class="journey-meta">
+          <h3 class="journey-name">Grand Canyon Rim Overnight</h3>
+          <span class="journey-dur">2 days</span>
+        </div>
+        <p class="journey-region">Williams, Arizona</p>
+        <p class="journey-blurb">Steam-hauled service to the South Rim with a single night at El Tovar and a sunrise observation-car return.</p>
+        <div class="journey-foot">
+          <span>Mar – Nov</span>
+          <span class="journey-dot"></span>
+          <span>130 mi</span>
+          <span class="journey-reserve">Reserve →</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ── FLEET ──────────────────────────────────────────────────── -->
+<section id="fleet">
+  <div class="fleet-grid">
+    <div class="fleet-copy">
+      <span class="eyebrow">The fleet</span>
+      <h2>Know your vantage point before you board.</h2>
+      <p>Heritage cars are not interchangeable. Seat orientation, window dimensions, and cabin type vary dramatically car-to-car. We map every detail so you choose the seat, not just the train.</p>
+
+      <div class="fleet-dl">
+        <div class="fleet-item">
+          <span class="fleet-num">01</span>
+          <div><p class="fleet-title">Vista Dome</p><p class="fleet-desc">360° panoramic glass ceilings — best for the Sierra climb and canyon rim approach.</p></div>
+        </div>
+        <div class="fleet-item">
+          <span class="fleet-num">02</span>
+          <div><p class="fleet-title">Sunset Parlor</p><p class="fleet-desc">Swivel armchairs oriented west for Pacific sunsets. Private reservation only.</p></div>
+        </div>
+        <div class="fleet-item">
+          <span class="fleet-num">03</span>
+          <div><p class="fleet-title">Pullman Sleeper</p><p class="fleet-desc">Restored 1948 berths with full-height bay windows. Overnight routes only.</p></div>
+        </div>
+        <div class="fleet-item">
+          <span class="fleet-num">04</span>
+          <div><p class="fleet-title">Open Observation</p><p class="fleet-desc">Brass-railed rear deck — open to weather, open to view. Seasonal availability.</p></div>
+        </div>
+      </div>
+
+      <a href="#" class="fleet-cta">Explore fleet schematics →</a>
+    </div>
+
+    <div class="fleet-imgs">
+      <div class="fleet-img-main"><img src="assets/fleet-interior.jpg" alt="Vintage train passenger car interior" loading="lazy"></div>
+      <div class="fleet-img-row">
+        <div class="fleet-img-sm"><img src="assets/fleet-brass-detail.jpg" alt="Brass rail detail on a heritage train" loading="lazy"></div>
+        <div class="fleet-img-sm"><img src="assets/fleet-window-view.jpg" alt="View from a train window across a mountain landscape" loading="lazy"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PHILOSOPHY ─────────────────────────────────────────────── -->
+<section id="philosophy">
+  <div class="wrap-sm">
+    <span class="eyebrow">Our philosophy</span>
+    <h2>"The rhythm of the rails is the last refuge of the contemplative traveller."</h2>
+    <div class="phil-rule"></div>
+    <p class="phil-body">Every reservation supports the operators preserving these routes — their restoration shops, their archives, and the slow, deliberate craft of keeping a 1940s observation car on the rails for another century.</p>
+    <div class="phil-tags">
+      <span>Non-digital quiet cars</span>
+      <span>Sommelier service</span>
+      <span>Berth concierge</span>
+      <span>Carbon-neutral ticketing</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ────────────────────────────────────────────────────── -->
+<section id="faq">
+  <div class="wrap-sm">
+    <span class="eyebrow">Before you board</span>
+    <h2>Questions we know you'll ask.</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q">How do I know my seat will match the description?<span class="faq-chevron">▼</span></button>
+        <div class="faq-a">Your car type, position, direction of travel, and window size are confirmed in your booking receipt and on your ticket. If anything changes before departure, we notify you within 24 hours and offer a free seat swap or a full refund — your choice.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What's the difference between a Vista Dome and a Pullman Sleeper?<span class="faq-chevron">▼</span></button>
+        <div class="faq-a">The Vista Dome is a shared open car with 360° panoramic glass — social, day-use, best for mountain and canyon passes. The Pullman Sleeper is a private enclosed berth with full-height bay windows, converting from seating to a full bed for overnight routes. Different products at different prices, clearly labelled before you book.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Can I change my seat after booking?<span class="faq-chevron">▼</span></button>
+        <div class="faq-a">Yes — free if requested 48 or more hours before departure. A $25 admin fee applies between 24–48 hours. No changes inside 24 hours, as cars are sealed and manifests locked for operations.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What's included — and what costs extra?<span class="faq-chevron">▼</span></button>
+        <div class="faq-a">Every ticket listing specifies seat type, whether meal service is included, shared vs. private car, direction of travel, and available add-ons. Wine, spirits, and dining upgrades are itemised separately. Nothing appears as a surprise line item at checkout.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What are the refund terms?<span class="faq-chevron">▼</span></button>
+        <div class="faq-a">Full refund if cancelled 7 or more days before departure. 50% refund for cancellations 3–7 days before. No refund inside 3 days, though you may transfer your booking to another traveller at no charge.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── QUALIFIER ──────────────────────────────────────────────── -->
+<section id="qualifier">
+  <div class="wrap-sm">
+    <span class="eyebrow">Find your journey</span>
+    <h2>Is a RailNest expedition right for you?</h2>
+    <div class="q-box">
+      <div id="q-screen">
+        <div class="q-pips" id="q-pips"></div>
+        <div class="q-num" id="q-num"></div>
+        <div class="q-text" id="q-text"></div>
+        <div class="q-opts" id="q-opts"></div>
+        <div class="q-nav">
+          <button class="q-btn q-back" id="q-back">← Back</button>
+          <button class="q-btn q-fwd" id="q-fwd" disabled>Next →</button>
+        </div>
+      </div>
+      <div class="q-result" id="q-result"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────── -->
+<footer id="dispatch">
+  <div class="foot-grid">
+    <div>
+      <span class="foot-brand">RailNest</span>
+      <p class="foot-tagline">Quiet luxury for the traveller seeking the heritage of the American West. By rail, on purpose.</p>
+    </div>
+    <div class="foot-links-row">
+      <div>
+        <p class="foot-col-label">Destinations</p>
+        <ul class="foot-links">
+          <li><a href="#">Arizona canyons</a></li>
+          <li><a href="#">Napa Valley</a></li>
+          <li><a href="#">Pacific Coast</a></li>
+          <li><a href="#">Sierra Nevada</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-col-label">Company</p>
+        <ul class="foot-links">
+          <li><a href="#">Our story</a></li>
+          <li><a href="#">Fleet archive</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-dispatch">
+      <p class="foot-col-label">The dispatch</p>
+      <p>Seasonal route releases, rare cabin unlocks, and the occasional archival photograph.</p>
+      <form class="foot-form" onsubmit="return false">
+        <input class="foot-input" type="email" placeholder="Email address">
+        <button class="foot-submit" type="submit">Join</button>
+      </form>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 RailNest Heritage Co.</span>
+    <div class="foot-bottom-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── FAQ ─────────────────────────────────────────────────────── */
+document.querySelectorAll('.faq-item').forEach(item => {
+  item.querySelector('.faq-q').addEventListener('click', () => {
+    const was = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!was) item.classList.add('open');
+  });
+});
+
+/* ── QUALIFIER ───────────────────────────────────────────────── */
+const QS = [
+  { text:'What matters most to your ideal rail experience?', opts:[
+    {l:'Floor-to-ceiling panoramic glass — I want to feel inside the landscape',s:3},
+    {l:'A classic window seat with rolling scenery is perfect',s:2},
+    {l:'Social atmosphere — great company, great drinks, moving backdrop',s:1},
+    {l:'Arriving somewhere beautiful without an airport',s:0}
+  ]},
+  { text:'How do you prefer to travel?', opts:[
+    {l:'Private — just me or my travel partner, no shared space',s:3},
+    {l:'Our group, with occasional friendly interaction',s:2},
+    {l:'Open and social — I love meeting fellow travellers',s:1},
+    {l:'Whatever\'s available and works',s:0}
+  ]},
+  { text:'What\'s your preferred journey length?', opts:[
+    {l:'Overnight — I want to wake up somewhere completely new',s:3},
+    {l:'A full day — 6 to 9 hours of scenery',s:2},
+    {l:'A half-day excursion — 4 to 6 hours',s:1},
+    {l:'Short as possible, great views as a bonus',s:0}
+  ]},
+  { text:'Which sounds like your ideal RailNest moment?', opts:[
+    {l:'Canyon walls appearing outside my berth window at dawn',s:3},
+    {l:'A Pacific sunset from a wide window seat, drink in hand',s:2},
+    {l:'Something cold in a dome car as the desert turns orange',s:1},
+    {l:'Arriving refreshed, no middle seat, no security queue',s:0}
+  ]},
+  { text:'What\'s your budget per person?', opts:[
+    {l:'$500–$1,000 — I want something genuinely special',s:3},
+    {l:'$200–$500 — a considered splurge',s:2},
+    {l:'Under $200 — value matters',s:1},
+    {l:'Price is secondary to the right experience',s:3}
+  ]}
+];
+
+const TIERS = [
+  { min:11, emoji:'🔭', name:'The Panorama Seeker',
+    body:'You want full immersion — glass on three sides, private space, the canyon at dawn. Your journey is the <strong>Grand Canyon Rim Overnight</strong> in a Pullman Sleeper. You\'ll wake up inside the landscape, not just looking at it.',
+    cta:'Reserve the Canyon Rim Overnight →', href:'mailto:hello@railnest.com?subject=Canyon Rim Overnight' },
+  { min:5, emoji:'🪟', name:'The Scenic Traveller',
+    body:'You want great scenery and a comfortable seat without paying for a private berth you won\'t use. Your journey is the <strong>Coast Starlight Heritage</strong> or <strong>Verde Canyon</strong> in a Vista Dome or window seat.',
+    cta:'Explore scenic day routes →', href:'mailto:hello@railnest.com?subject=Scenic Routes' },
+  { min:0, emoji:'🏛️', name:'The Heritage Explorer',
+    body:'You\'re here for the train itself — the vintage cars, the slow pace, the story. Your journey is the <strong>Napa Valley Wine Train</strong> in a restored 1917 Pullman dining car. Short, atmospheric, unhurried.',
+    cta:'Book the Napa Valley Wine Train →', href:'mailto:hello@railnest.com?subject=Napa Valley Wine Train' }
+];
+
+let cur = 0;
+const ans = [];
+const LETTERS = ['A','B','C','D'];
+
+const qScreen = document.getElementById('q-screen');
+const qResult = document.getElementById('q-result');
+const qPips   = document.getElementById('q-pips');
+const qNum    = document.getElementById('q-num');
+const qText   = document.getElementById('q-text');
+const qOpts   = document.getElementById('q-opts');
+const qBack   = document.getElementById('q-back');
+const qFwd    = document.getElementById('q-fwd');
+
+function renderPips(){
+  qPips.innerHTML = QS.map((_,i) =>
+    `<div class="q-pip ${i<cur?'done':i===cur?'cur':''}"></div>`).join('');
+}
+function renderQ(){
+  const q = QS[cur];
+  qNum.textContent = `Question ${cur+1} of ${QS.length}`;
+  qText.textContent = q.text;
+  const sel = ans[cur] ?? null;
+  qOpts.innerHTML = q.opts.map((o,i) => `
+    <button class="q-opt${sel===i?' sel':''}" data-i="${i}">
+      <span class="q-letter">${LETTERS[i]}</span>${o.l}
+    </button>`).join('');
+  qOpts.querySelectorAll('.q-opt').forEach(b =>
+    b.addEventListener('click', () => { ans[cur]=parseInt(b.dataset.i); renderQ(); qFwd.disabled=false; }));
+  qFwd.disabled = sel===null||sel===undefined;
+  qBack.style.visibility = cur===0?'hidden':'visible';
+  qFwd.textContent = cur===QS.length-1?'See my result →':'Next →';
+  renderPips();
+}
+qBack.addEventListener('click', ()=>{ if(cur>0){cur--;renderQ();} });
+qFwd.addEventListener('click', ()=>{
+  if(ans[cur]===undefined) return;
+  if(cur<QS.length-1){ cur++;renderQ(); } else { showResult(); }
+});
+function showResult(){
+  const total = ans.reduce((s,a,q)=>s+QS[q].opts[a].s,0);
+  const tier = TIERS.find(t=>total>=t.min);
+  qScreen.style.display='none';
+  qResult.innerHTML=`
+    <div class="res-top">
+      <div class="res-emoji">${tier.emoji}</div>
+      <div><div class="res-tag">Your RailNest journey</div><div class="res-name">${tier.name}</div></div>
+    </div>
+    <div class="res-body">${tier.body}</div>
+    <a href="${tier.href}" class="res-cta">${tier.cta}</a>
+    <button class="res-reset" id="restart">↩ Start over</button>`;
+  qResult.classList.add('show');
+  document.getElementById('restart').addEventListener('click',()=>{
+    cur=0;ans.length=0;
+    qResult.classList.remove('show');qResult.innerHTML='';
+    qScreen.style.display='';renderQ();
+  });
+}
+renderQ();
+</script>
+
+<!-- ── CHAT WIDGET ────────────────────────────────────────────── -->
+
+<!-- Floating button -->
+<button id="chat-fab" aria-label="Chat with Remy" title="Chat with Remy">
+  <svg id="fab-icon-open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+  <svg id="fab-icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:none">
+    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+  <span id="fab-label">Ask Remy</span>
+</button>
+
+<!-- Chat panel -->
+<div id="chat-panel" aria-hidden="true">
+  <div class="chat-panel-header">
+    <div class="chat-panel-identity">
+      <div class="chat-panel-avatar">🚂</div>
+      <div>
+        <div class="chat-panel-name">Remy</div>
+        <div class="chat-panel-status"><span class="chat-online-dot"></span>RailNest Concierge</div>
+      </div>
+    </div>
+    <button class="chat-panel-close" id="chat-close" aria-label="Close chat">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <iframe id="chat-iframe" src="../index.html" title="RailNest Concierge — Remy" allow="clipboard-write"></iframe>
+</div>
+
+<!-- Tooltip nudge (shows once, disappears after interaction) -->
+<div id="chat-nudge">Need help choosing? Ask Remy →</div>
+
+<style>
+  /* FAB button */
+  #chat-fab {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: var(--mahogany);
+    color: var(--mah-fg);
+    border: none;
+    border-radius: 40px;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 24px rgba(74,30,18,.35), 0 1px 4px rgba(0,0,0,.15);
+    transition: transform .2s, box-shadow .2s, border-radius .25s;
+    white-space: nowrap;
+  }
+  #chat-fab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(74,30,18,.4), 0 2px 8px rgba(0,0,0,.15);
+  }
+  #chat-fab:active { transform: translateY(0); }
+  #chat-fab.open {
+    border-radius: 50%;
+    padding: 14px;
+  }
+  #chat-fab.open #fab-label { display: none; }
+
+  /* Nudge tooltip */
+  #chat-nudge {
+    position: fixed;
+    bottom: 90px;
+    right: 28px;
+    z-index: 199;
+    background: var(--ink);
+    color: var(--canvas);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    padding: 10px 16px;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.18);
+    white-space: nowrap;
+    animation: nudgePop .4s ease .8s both;
+    cursor: pointer;
+  }
+  #chat-nudge::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    right: 28px;
+    width: 12px;
+    height: 12px;
+    background: var(--ink);
+    transform: rotate(45deg);
+    border-radius: 2px;
+  }
+  #chat-nudge.hidden { display: none; }
+  @keyframes nudgePop {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Chat panel */
+  #chat-panel {
+    position: fixed;
+    bottom: 100px;
+    right: 28px;
+    z-index: 198;
+    width: 390px;
+    height: 580px;
+    background: #0f1117;
+    border-radius: 18px;
+    box-shadow: 0 16px 56px rgba(0,0,0,.28), 0 2px 8px rgba(0,0,0,.12);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(.9) translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform .25s cubic-bezier(.34,1.56,.64,1), opacity .2s ease;
+    transform-origin: bottom right;
+  }
+  #chat-panel.open {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* Panel header */
+  .chat-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: #1a1d27;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    flex-shrink: 0;
+  }
+  .chat-panel-identity { display: flex; align-items: center; gap: 10px; }
+  .chat-panel-avatar {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #4f8ef7, #7c5cbf);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .chat-panel-name { font-size: 14px; font-weight: 600; color: #e8f0ff; font-family: 'Inter', sans-serif; }
+  .chat-panel-status {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; color: #6888aa; font-family: 'Inter', sans-serif; margin-top: 1px;
+  }
+  .chat-online-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #00ff88;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  .chat-panel-close {
+    background: none; border: none; cursor: pointer;
+    color: #6888aa; padding: 6px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    transition: color .15s, background .15s;
+  }
+  .chat-panel-close:hover { color: #e8f0ff; background: rgba(255,255,255,.08); }
+
+  /* iframe fills rest of panel */
+  #chat-iframe {
+    flex: 1;
+    width: 100%;
+    border: none;
+    display: block;
+  }
+
+  /* Mobile: full-screen panel */
+  @media (max-width: 480px) {
+    #chat-panel {
+      width: calc(100vw - 24px);
+      height: 70dvh;
+      right: 12px;
+      bottom: 90px;
+    }
+    #chat-fab { right: 16px; bottom: 20px; }
+    #chat-nudge { right: 16px; bottom: 80px; }
+  }
+</style>
+
+<script>
+  const fab       = document.getElementById('chat-fab');
+  const panel     = document.getElementById('chat-panel');
+  const closeBtn  = document.getElementById('chat-close');
+  const nudge     = document.getElementById('chat-nudge');
+  const iconOpen  = document.getElementById('fab-icon-open');
+  const iconClose = document.getElementById('fab-icon-close');
+  let isOpen = false;
+
+  function openChat() {
+    isOpen = true;
+    panel.classList.add('open');
+    panel.setAttribute('aria-hidden', 'false');
+    fab.classList.add('open');
+    iconOpen.style.display  = 'none';
+    iconClose.style.display = '';
+    nudge.classList.add('hidden');
+  }
+
+  function closeChat() {
+    isOpen = false;
+    panel.classList.remove('open');
+    panel.setAttribute('aria-hidden', 'true');
+    fab.classList.remove('open');
+    iconOpen.style.display  = '';
+    iconClose.style.display = 'none';
+  }
+
+  fab.addEventListener('click', () => isOpen ? closeChat() : openChat());
+  closeBtn.addEventListener('click', closeChat);
+  nudge.addEventListener('click', openChat);
+
+  // Hide nudge after 6 seconds
+  setTimeout(() => nudge.classList.add('hidden'), 6000);
+
+  // Close on Escape
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && isOpen) closeChat(); });
+</script>
+</body>
+</html>

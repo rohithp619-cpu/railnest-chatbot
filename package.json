@@ -1,0 +1,21 @@
+{
+  "name": "railnest-chatbot",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  },
+  "allowScripts": {
+    "esbuild@0.21.5": true,
+    "@google/genai@2.10.0": true,
+    "fsevents@2.3.3": true,
+    "protobufjs@7.6.4": true
+  },
+  "dependencies": {
+    "@google/genai": "^2.10.0"
+  }
+}
