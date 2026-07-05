@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RailNest — Customer Support</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --canvas:   #f9f7f2;
+      --sand:     #f0ebe0;
+      --ink:      #1e1a14;
+      --mahogany: #4a1e12;
+      --mah-fg:   #f7f2eb;
+      --brass:    #9a7c3a;
+      --muted:    #7a6f62;
+      --border:   #ddd6c8;
+      --green:    #3a9b6f;
+      --radius:   12px;
+
+      /* semantic aliases used throughout */
+      --bg:          var(--canvas);
+      --surface:     #ffffff;
+      --surface2:    var(--sand);
+      --text:        var(--ink);
+      --accent:      var(--mahogany);
+      --user-bubble: rgba(74,30,18,0.07);
+      --bot-bubble:  #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--canvas);
+      color: var(--ink);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ─────────────────────────────── */
+    header {
+      background: rgba(249,247,242,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 13px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; }
+
+    .brand-icon {
+      width: 36px; height: 36px;
+      background: var(--mahogany);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+
+    .brand-text h1 {
+      font-family: 'Fraunces', serif;
+      font-size: 17px; font-weight: 700; letter-spacing: -0.2px;
+      color: var(--ink);
+    }
+    .brand-text p { font-size: 11px; color: var(--muted); margin-top: 1px; letter-spacing: 0.01em; }
+
+    .header-right { display: flex; align-items: center; gap: 10px; }
+
+    .status-badge {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--green);
+      background: rgba(58,155,111,0.1);
+      border: 1px solid rgba(58,155,111,0.25);
+      border-radius: 20px; padding: 5px 12px;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      background: var(--green); border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    #settings-btn {
+      background: none; border: 1px solid var(--border);
+      border-radius: 8px; width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--muted); transition: all 0.15s;
+    }
+    #settings-btn:hover { border-color: var(--brass); color: var(--ink); }
+
+    /* ── MODAL ──────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(30,26,20,0.55);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; backdrop-filter: blur(6px);
+    }
+    .modal-overlay.hidden { display: none; }
+
+    .modal {
+      background: var(--canvas);
+      border: 1px solid var(--border);
+      border-radius: 18px; padding: 32px;
+      width: 100%; max-width: 420px; margin: 20px;
+      box-shadow: 0 24px 56px rgba(30,26,20,0.18);
+    }
+
+    .modal-icon {
+      width: 48px; height: 48px;
+      background: var(--mahogany);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; margin-bottom: 18px;
+    }
+
+    .modal h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 22px; font-weight: 700; margin-bottom: 8px; color: var(--ink);
+    }
+    .modal p  { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 20px; }
+    .modal p a { color: var(--mahogany); text-decoration: underline; text-underline-offset: 3px; }
+
+    .modal-steps {
+      background: var(--sand); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
+      font-size: 13px; color: var(--muted); line-height: 1.9;
+    }
+    .modal-steps strong { color: var(--ink); }
+
+    .modal-input {
+      width: 100%; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 14px; color: var(--ink);
+      font-size: 14px; font-family: monospace;
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s; margin-bottom: 12px;
+    }
+    .modal-input:focus { border-color: var(--brass); box-shadow: 0 0 0 3px rgba(154,124,58,0.15); }
+    .modal-input.error { border-color: #c0392b; }
+
+    .modal-error { font-size: 12px; color: #c0392b; margin-bottom: 12px; display: none; }
+    .modal-error.visible { display: block; }
+
+    .modal-btn {
+      width: 100%; background: var(--mahogany); color: var(--mah-fg);
+      border: none; border-radius: 40px; padding: 13px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      font-family: 'Inter', sans-serif; transition: opacity 0.2s;
+    }
+    .modal-btn:hover { opacity: 0.88; }
+
+    /* ── CHAT WINDOW ────────────────────────── */
+    #chat-window {
+      flex: 1; overflow-y: auto;
+      padding: 24px 20px;
+      display: flex; flex-direction: column; gap: 14px;
+      scroll-behavior: smooth;
+      background: var(--sand);
+    }
+
+    #chat-window::-webkit-scrollbar { width: 3px; }
+    #chat-window::-webkit-scrollbar-track { background: transparent; }
+    #chat-window::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .message {
+      display: flex; gap: 10px; max-width: 780px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user { align-self: flex-end; flex-direction: row-reverse; }
+    .message.bot  { align-self: flex-start; }
+
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; flex-shrink: 0; margin-top: 2px;
+    }
+    .avatar.bot  { background: var(--mahogany); }
+    .avatar.user { background: var(--border); }
+
+    .bubble {
+      padding: 11px 15px; border-radius: var(--radius);
+      font-size: 14px; line-height: 1.65; max-width: 560px;
+    }
+    .message.bot .bubble {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top-left-radius: 4px;
+      color: var(--ink);
+      box-shadow: 0 1px 3px rgba(30,26,20,0.06);
+    }
+    .message.user .bubble {
+      background: var(--mahogany);
+      color: var(--mah-fg);
+      border-top-right-radius: 4px;
+    }
+
+    .bubble p + p { margin-top: 7px; }
+    .bubble ul, .bubble ol { padding-left: 18px; margin-top: 5px; }
+    .bubble li { margin-bottom: 3px; }
+    .bubble strong { color: var(--mahogany); }
+    .message.user .bubble strong { color: #f5d9a8; }
+    .bubble code {
+      background: rgba(154,124,58,0.12); padding: 1px 5px;
+      border-radius: 4px; font-family: monospace; font-size: 13px;
+    }
+
+    /* typing */
+    .typing-indicator { display: flex; align-items: center; gap: 5px; padding: 12px 15px; }
+    .typing-dot {
+      width: 6px; height: 6px; background: var(--border);
+      border-radius: 50%; animation: bounce 1.2s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)}
+    }
+
+    /* ── SUGGESTIONS ────────────────────────── */
+    #suggestions {
+      padding: 10px 20px 14px;
+      display: flex; gap: 7px; flex-wrap: wrap; flex-shrink: 0;
+      background: var(--sand);
+      border-top: 1px solid var(--border);
+    }
+    #suggestions.hidden { display: none; }
+
+    .suggestion-chip {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 6px 13px;
+      font-size: 12px; color: var(--muted);
+      cursor: pointer; transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
+    }
+    .suggestion-chip:hover { border-color: var(--brass); color: var(--ink); }
+
+    /* ── RATE BAR ───────────────────────────── */
+    #rate-bar {
+      padding: 5px 20px; font-size: 12px;
+      color: #b45309; display: none; flex-shrink: 0;
+      background: var(--sand);
+    }
+
+    /* ── INPUT BAR ──────────────────────────── */
+    #input-bar {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 14px 16px; display: flex; gap: 10px;
+      align-items: flex-end; flex-shrink: 0;
+    }
+
+    #user-input {
+      flex: 1; background: var(--sand);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 11px 15px; color: var(--ink);
+      font-size: 14px; resize: none; outline: none;
+      max-height: 130px; line-height: 1.5;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    #user-input:focus {
+      border-color: var(--brass);
+      box-shadow: 0 0 0 3px rgba(154,124,58,0.12);
+    }
+    #user-input::placeholder { color: var(--muted); }
+
+    #send-btn {
+      width: 42px; height: 42px; background: var(--mahogany);
+      border: none; border-radius: 10px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.2s, transform 0.1s; flex-shrink: 0;
+    }
+    #send-btn:hover { opacity: 0.88; }
+    #send-btn:active { transform: scale(0.95); }
+    #send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    #send-btn svg { width: 17px; height: 17px; fill: var(--mah-fg); }
+
+    .error-msg {
+      color: #9b1c1c; font-size: 13px; padding: 8px 12px;
+      background: rgba(155,28,28,0.07);
+      border: 1px solid rgba(155,28,28,0.18); border-radius: 8px;
+    }
+
+    @media (max-width: 600px) {
+      .bubble { max-width: 88vw; }
+      #suggestions { gap: 5px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-icon">🚂</div>
+    <h2>Connect Remy — it's free</h2>
+    <p>This chatbot runs on <strong style="color:var(--text)">Groq</strong>. Free account — no credit card needed.</p>
+    <div class="modal-steps">
+      <strong>1.</strong> Go to <a href="https://console.groq.com" target="_blank">console.groq.com</a> and sign up (email only)<br>
+      <strong>2.</strong> Click <strong>"API Keys"</strong> in the left sidebar<br>
+      <strong>3.</strong> Create a key, copy it, and paste it below
+    </div>
+    <input class="modal-input" id="modal-key-input" type="password" placeholder="Paste your Groq API key…" autocomplete="off" />
+    <div class="modal-error" id="modal-error">Key looks too short — please paste the full key from Groq.</div>
+    <button class="modal-btn" id="modal-save-btn">Start chatting — it's free</button>
+  </div>
+</div>
+
+<header>
+  <div class="brand">
+    <div class="brand-icon">🚂</div>
+    <div class="brand-text">
+      <h1>RailNest</h1>
+      <p>Scenic Heritage Rail Journeys</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      Remy is online
+    </div>
+    <button id="settings-btn" title="Change API key">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<div id="chat-window"></div>
+
+<div id="suggestions">
+  <span class="suggestion-chip" onclick="sendSuggestion(this)">What's the difference between seat types?</span>
+  <span class="suggestion-chip" onclick="sendSuggestion(this)">I want panoramic views — what should I book?</span>
+  <span class="suggestion-chip" onclick="sendSuggestion(this)">Can I change my seat after booking?</span>
+  <span class="suggestion-chip" onclick="sendSuggestion(this)">What routes do you offer?</span>
+</div>
+
+<div id="rate-bar"></div>
+
+<div id="input-bar">
+  <textarea id="user-input" placeholder="Ask Remy anything about your journey…" rows="1"></textarea>
+  <button id="send-btn" disabled>
+    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+  </button>
+</div>
+
+<script type="module">
+  const SYSTEM_PROMPT = `You are Remy, the friendly customer service chatbot for RailNest — a boutique train ticket booking service specializing in scenic heritage railways across the American Southwest and Pacific Coast.
+
+RailNest offers these routes:
+- Wine Country Express: Napa Valley → Santa Barbara (day trip, 6 hrs)
+- Canyon Rim Overnight: Flagstaff → Moab (overnight, 14 hrs)
+- Pacific Sunset Route: San Francisco → San Diego (day trip, 9 hrs)
+- Desert Bloom Daytrip: Tucson → Sedona (day trip, 4 hrs)
+
+SEAT TYPES — explain these clearly, as 80% of complaints stem from confusion here:
+- Standard Window Seat: Individual reclining seat beside a standard double-pane window. NOT panoramic. Faces forward on most cars, but Heritage Coach cars have some backward-facing seats.
+- Observation Berth: Private enclosed mini-cabin for 2, floor-to-ceiling panoramic curved glass on three sides. Premium tier. Best for couples or solo travelers wanting the view.
+- Lounge Car Seat: Open shared car with a 180° glass dome ceiling. Social atmosphere, no assigned seats, first-come first-served within the car. Great for meeting fellow travelers.
+- Sleeper Cabin: Available on overnight routes only (Canyon Rim). Converts from day seating to two bunk beds at night. Has a small porthole-style side window only — not panoramic.
+- Heritage Coach: Vintage restored 1940s-era bench seating. Charming and atmospheric. Windows do not open; every other row faces backward. Best for rail enthusiasts who love the historic feel.
+
+POLICIES:
+- Seat/cabin changes: Free if requested 48+ hours before departure. $25 fee for 24–48 hours before. No changes within 24 hours.
+- Refunds: 100% refund if cancelled 7+ days before departure. 50% refund 3–7 days before. No refund under 3 days.
+- Booking: railnest.com or 1-800-RAILNEST (Mon–Fri 8am–8pm PT)
+- Group bookings (6+): 10% discount, contact groups@railnest.com
+
+YOUR BEHAVIOR:
+- Always ask clarifying questions before recommending a seat type: Do they want privacy or social? Day or overnight? Views or historic charm?
+- Be warm and enthusiastic about rail travel. Use occasional gentle train idioms but don't overdo it.
+- For complaints about seat types after booking: empathize first, then apply the change/refund policy firmly but kindly.
+- Keep responses concise — 3–5 sentences max unless explaining seat types in detail.
+- Never make up route details, prices, or policies not listed above.`;
+
+  const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+  const MODEL        = "llama-3.3-70b-versatile";
+  const MAX_RPM      = 30; // Groq free tier limit
+
+  // Sliding-window rate limiter
+  const requestTimes = [];
+  let rateBarTimer = null;
+
+  function canSend() {
+    const now = Date.now();
+    while (requestTimes.length && now - requestTimes[0] > 60000) requestTimes.shift();
+    return requestTimes.length < MAX_RPM;
+  }
+  function recordRequest() { requestTimes.push(Date.now()); }
+  function waitSeconds() {
+    if (requestTimes.length < MAX_RPM) return 0;
+    return Math.ceil((60000 - (Date.now() - requestTimes[0])) / 1000);
+  }
+  function showRateBar(msg) {
+    clearInterval(rateBarTimer);
+    rateBar.style.display = "block";
+    rateBar.textContent = msg;
+    rateBarTimer = setInterval(() => {
+      const secs = waitSeconds();
+      if (secs <= 0) {
+        clearInterval(rateBarTimer);
+        rateBar.style.display = "none";
+      } else {
+        rateBar.textContent = `⚠ Rate limit — sending again in ${secs}s (free tier: ${MAX_RPM} req/min).`;
+      }
+    }, 1000);
+  }
+
+  let apiKey = null;
+  let history = []; // { role, content }
+  let isStreaming = false;
+
+  const chatWindow   = document.getElementById("chat-window");
+  const userInput    = document.getElementById("user-input");
+  const sendBtn      = document.getElementById("send-btn");
+  const suggestions  = document.getElementById("suggestions");
+  const rateBar      = document.getElementById("rate-bar");
+  const modal        = document.getElementById("modal");
+  const modalInput   = document.getElementById("modal-key-input");
+  const modalError   = document.getElementById("modal-error");
+  const modalSaveBtn = document.getElementById("modal-save-btn");
+  const settingsBtn  = document.getElementById("settings-btn");
+
+  function openModal() {
+    modalInput.value = "";
+    modalError.classList.remove("visible");
+    modalInput.classList.remove("error");
+    modal.classList.remove("hidden");
+    setTimeout(() => modalInput.focus(), 50);
+  }
+
+  function saveKey() {
+    const key = modalInput.value.trim();
+    if (key.length < 20) {
+      modalInput.classList.add("error");
+      modalError.classList.add("visible");
+      return;
+    }
+    apiKey = key;
+    localStorage.setItem("railnest_groq_key", key);
+    modal.classList.add("hidden");
+    sendBtn.disabled = false;
+    if (!chatWindow.children.length) greet();
+    userInput.focus();
+  }
+
+  function greet() {
+    addBotMessage("All aboard! I'm Remy, your RailNest journey guide 🚂\n\nWhether you're planning a trip or need help with an existing booking, I'm here to keep things on track. What can I help you with today?");
+  }
+
+  // Boot
+  const savedKey = localStorage.getItem("railnest_groq_key");
+  if (savedKey) {
+    apiKey = savedKey;
+    modal.classList.add("hidden");
+    sendBtn.disabled = false;
+    greet();
+  } else {
+    openModal();
+  }
+
+  modalSaveBtn.addEventListener("click", saveKey);
+  modalInput.addEventListener("keydown", e => { if (e.key === "Enter") saveKey(); });
+  settingsBtn.addEventListener("click", openModal);
+
+  userInput.addEventListener("input", () => {
+    userInput.style.height = "auto";
+    userInput.style.height = Math.min(userInput.scrollHeight, 140) + "px";
+  });
+
+  userInput.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      if (!isStreaming) handleSend();
+    }
+  });
+
+  sendBtn.addEventListener("click", handleSend);
+
+  window.sendSuggestion = function(el) {
+    userInput.value = el.textContent;
+    suggestions.classList.add("hidden");
+    handleSend();
+  };
+
+  async function handleSend() {
+    const text = userInput.value.trim();
+    if (!text || isStreaming || !apiKey) return;
+
+    if (!canSend()) {
+      showRateBar(`⚠ Rate limit — sending again in ${waitSeconds()}s (free tier: ${MAX_RPM} req/min).`);
+      return;
+    }
+
+    clearInterval(rateBarTimer);
+    rateBar.style.display = "none";
+    suggestions.classList.add("hidden");
+    userInput.value = "";
+    userInput.style.height = "auto";
+
+    addUserMessage(text);
+    history.push({ role: "user", content: text });
+    recordRequest();
+    await streamResponse();
+  }
+
+  async function streamResponse() {
+    isStreaming = true;
+    sendBtn.disabled = true;
+
+    const typingEl = addTypingIndicator();
+
+    try {
+      const response = await fetch(GROQ_API_URL, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            ...history,
+          ],
+          stream: true,
+        }),
+      });
+
+      if (!response.ok) {
+        const errBody = await response.text();
+        throw new Error(`${response.status} ${errBody}`);
+      }
+
+      typingEl.remove();
+
+      let fullText = "";
+      const botEl = addBotMessage("", true);
+      const bubbleSpan = botEl.querySelector(".bubble-text");
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop();
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const data = line.slice(6).trim();
+          if (data === "[DONE]") break;
+          try {
+            const json = JSON.parse(data);
+            fullText += json.choices?.[0]?.delta?.content ?? "";
+            bubbleSpan.innerHTML = markdownToHtml(fullText);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+          } catch {}
+        }
+      }
+
+      history.push({ role: "assistant", content: fullText });
+
+    } catch (err) {
+      typingEl?.remove();
+      const msg = String(err?.message ?? "");
+      if (msg.includes("429") || msg.toLowerCase().includes("rate")) {
+        showRateBar(`⚠ Rate limit hit — sending again in ${waitSeconds()}s (free tier: ${MAX_RPM} req/min).`);
+      } else if (msg.includes("401") || msg.includes("403") || msg.toLowerCase().includes("invalid api key")) {
+        addErrorMessage("Invalid API key — click the gear icon ⚙ to update it.");
+      } else {
+        addErrorMessage("Something went wrong — please try again.");
+      }
+    }
+
+    isStreaming = false;
+    sendBtn.disabled = false;
+    userInput.focus();
+  }
+
+  function addUserMessage(text) {
+    const el = document.createElement("div");
+    el.className = "message user";
+    el.innerHTML = `<div class="avatar user">👤</div><div class="bubble">${escapeHtml(text)}</div>`;
+    chatWindow.appendChild(el);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    return el;
+  }
+
+  function addBotMessage(text, streaming = false) {
+    const el = document.createElement("div");
+    el.className = "message bot";
+    el.innerHTML = `<div class="avatar bot">🚂</div><div class="bubble"><span class="bubble-text">${streaming ? "" : markdownToHtml(text)}</span></div>`;
+    chatWindow.appendChild(el);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    return el;
+  }
+
+  function addTypingIndicator() {
+    const el = document.createElement("div");
+    el.className = "message bot";
+    el.innerHTML = `<div class="avatar bot">🚂</div><div class="bubble typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>`;
+    chatWindow.appendChild(el);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    return el;
+  }
+
+  function addErrorMessage(msg) {
+    const el = document.createElement("div");
+    el.className = "message bot";
+    el.innerHTML = `<div class="avatar bot">🚂</div><div class="bubble error-msg">${escapeHtml(msg)}</div>`;
+    chatWindow.appendChild(el);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function markdownToHtml(text) {
+    return text
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.+?)\*/g, "<em>$1</em>")
+      .replace(/`(.+?)`/g, "<code>$1</code>")
+      .replace(/^#{1,3} (.+)$/gm, "<strong>$1</strong>")
+      .replace(/^- (.+)$/gm, "<li>$1</li>")
+      .replace(/(<li>[\s\S]*?<\/li>)/g, "<ul>$1</ul>")
+      .replace(/\n\n/g, "</p><p>")
+      .replace(/\n/g, "<br>");
+  }
+</script>
+</body>
+</html>

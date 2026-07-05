@@ -1,652 +1,969 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RailNest — Customer Support</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RailNest — Heritage rail journeys across the American West</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚂</text></svg>">
+
+  <meta name="description" content="Curated heritage rail expeditions across the American Southwest and Pacific Coast. Vintage cars, canyon rims, coastal sunsets, and wine country routes.">
+  <meta property="og:title" content="RailNest — Heritage rail journeys">
+  <meta property="og:description" content="Curated heritage rail expeditions across the American Southwest and Pacific Coast.">
+  <meta property="og:type" content="website">
+  <!-- <meta property="og:image" content="assets/hero-canyon-train.jpg"> -->
+  <meta name="twitter:card" content="summary_large_image">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
+    /* ── TOKENS ────────────────────────────────────────────── */
     :root {
-      --canvas:   #f9f7f2;
-      --sand:     #f0ebe0;
-      --ink:      #1e1a14;
-      --mahogany: #4a1e12;
-      --mah-fg:   #f7f2eb;
-      --brass:    #9a7c3a;
-      --muted:    #7a6f62;
-      --border:   #ddd6c8;
-      --green:    #3a9b6f;
-      --radius:   12px;
-
-      /* semantic aliases used throughout */
-      --bg:          var(--canvas);
-      --surface:     #ffffff;
-      --surface2:    var(--sand);
-      --text:        var(--ink);
-      --accent:      var(--mahogany);
-      --user-bubble: rgba(74,30,18,0.07);
-      --bot-bubble:  #ffffff;
+      --canvas:  #f9f7f2;
+      --sand:    #f0ebe0;
+      --ink:     #1e1a14;
+      --ink-80:  rgba(30,26,20,0.80);
+      --mahogany:#4a1e12;
+      --mah-fg:  #f7f2eb;
+      --brass:   #9a7c3a;
+      --muted:   #7a6f62;
+      --border:  #ddd6c8;
+      --radius:  10px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ── RESET ─────────────────────────────────────────────── */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+    body{
+      font-family:'Inter',system-ui,sans-serif;
+      background:var(--canvas);color:var(--ink);
+      line-height:1.65;min-height:100vh;overflow-x:hidden;
+    }
+    img{display:block;max-width:100%;height:auto}
+    a{color:inherit}
+    h1,h2,h3,h4{font-family:'Fraunces',ui-serif,Georgia,serif;font-feature-settings:"ss01"}
 
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--canvas);
-      color: var(--ink);
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
+    /* ── LAYOUT ────────────────────────────────────────────── */
+    .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+    .wrap-sm{max-width:780px;margin:0 auto;padding:0 24px}
+
+    /* ── NAV ───────────────────────────────────────────────── */
+    nav{
+      position:sticky;top:0;z-index:50;
+      border-bottom:1px solid rgba(221,214,200,.7);
+      background:rgba(249,247,242,.88);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    }
+    .nav-inner{
+      max-width:1200px;margin:0 auto;padding:0 24px;
+      height:64px;display:flex;align-items:center;justify-content:space-between;
+    }
+    .nav-logo{
+      font-family:'Fraunces',serif;font-size:21px;
+      text-decoration:none;color:var(--ink);letter-spacing:-.3px;
+    }
+    .nav-links{display:flex;gap:32px;font-size:14px;color:var(--muted)}
+    .nav-links a{text-decoration:none;transition:color .2s}
+    .nav-links a:hover{color:var(--ink)}
+    .nav-cta{
+      display:inline-flex;align-items:center;
+      background:var(--mahogany);color:var(--mah-fg);
+      font-size:13px;font-weight:500;padding:9px 18px;
+      border-radius:40px;text-decoration:none;transition:opacity .2s;
+    }
+    .nav-cta:hover{opacity:.88}
+    @media(max-width:680px){.nav-links{display:none}}
+
+    /* ── HERO ──────────────────────────────────────────────── */
+    #hero{padding:52px 24px 80px}
+    .hero-wrap{max-width:1200px;margin:0 auto}
+    .hero-text{max-width:720px;margin-bottom:44px}
+    .eyebrow{
+      display:block;font-size:11px;font-weight:500;
+      letter-spacing:.22em;text-transform:uppercase;
+      color:var(--brass);margin-bottom:20px;
+    }
+    h1{
+      font-size:clamp(40px,6.5vw,76px);line-height:1.02;
+      letter-spacing:-.5px;color:var(--ink);margin-bottom:20px;
+    }
+    .hero-sub{font-size:18px;color:var(--muted);max-width:540px;line-height:1.7}
+
+    .hero-img-wrap{
+      position:relative;overflow:hidden;
+      border-radius:18px;box-shadow:0 1px 0 rgba(0,0,0,.06);
+    }
+    .hero-img-wrap img{
+      width:100%;aspect-ratio:21/10;object-fit:cover;display:block;
+    }
+    .hero-img-overlay{
+      position:absolute;inset:0;
+      background:linear-gradient(to top,rgba(0,0,0,.35) 0%,transparent 55%);
+    }
+    .hero-img-caption{
+      position:absolute;bottom:24px;left:24px;right:24px;
+      display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;
+    }
+    .hero-caption-label{font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:rgba(247,242,235,.75);margin-bottom:4px}
+    .hero-caption-name{font-family:'Fraunces',serif;font-size:clamp(20px,3vw,30px);color:var(--mah-fg)}
+    .hero-caption-btn{
+      display:inline-flex;align-items:center;
+      background:rgba(249,247,242,.95);color:var(--ink);
+      font-size:13px;font-weight:500;padding:10px 20px;
+      border-radius:40px;text-decoration:none;transition:background .2s;white-space:nowrap;
+    }
+    .hero-caption-btn:hover{background:#fff}
+
+    .stats-strip{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:32px;
+      margin-top:44px;padding-top:32px;border-top:1px solid var(--border);
+    }
+    .stat-n{font-family:'Fraunces',serif;font-size:32px;color:var(--mahogany)}
+    .stat-l{margin-top:4px;font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--muted)}
+    @media(max-width:580px){.stats-strip{grid-template-columns:repeat(2,1fr)}}
+
+    /* ── JOURNEYS ──────────────────────────────────────────── */
+    #journeys{background:var(--sand);padding:80px 24px}
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;
+      gap:20px;margin-bottom:52px;flex-wrap:wrap;
+    }
+    h2{font-size:clamp(28px,4.5vw,48px);color:var(--ink);line-height:1.1}
+    .view-all{
+      font-size:13px;font-weight:500;color:var(--ink);
+      text-decoration:underline;text-decoration-color:var(--border);
+      text-underline-offset:6px;transition:text-decoration-color .2s;white-space:nowrap;
+    }
+    .view-all:hover{text-decoration-color:var(--brass)}
+
+    .journey-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:48px 32px}
+    @media(max-width:680px){.journey-grid{grid-template-columns:1fr}}
+
+    .journey-card{}
+    .journey-img{
+      overflow:hidden;border-radius:12px;
+      box-shadow:0 1px 0 rgba(0,0,0,.05);
+    }
+    .journey-img img{
+      width:100%;aspect-ratio:4/3;object-fit:cover;
+      transition:transform .7s ease;
+    }
+    .journey-card:hover .journey-img img{transform:scale(1.03)}
+    .journey-meta{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-top:20px}
+    .journey-name{font-family:'Fraunces',serif;font-size:24px;color:var(--ink)}
+    .journey-dur{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted)}
+    .journey-region{font-size:13px;color:var(--muted);margin-top:4px}
+    .journey-blurb{font-size:15px;line-height:1.65;color:var(--ink-80);margin-top:12px;max-width:480px}
+    .journey-foot{
+      display:flex;align-items:center;gap:16px;
+      margin-top:18px;padding-top:14px;
+      border-top:1px solid rgba(221,214,200,.7);
+      font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted);
+    }
+    .journey-dot{width:4px;height:4px;border-radius:50%;background:var(--border)}
+    .journey-reserve{margin-left:auto;font-weight:500;color:var(--mahogany)}
+
+    /* ── FLEET ─────────────────────────────────────────────── */
+    #fleet{padding:80px 24px}
+    .fleet-grid{
+      display:grid;grid-template-columns:1fr 1fr;gap:56px;
+      align-items:center;max-width:1200px;margin:0 auto;
+    }
+    @media(max-width:780px){.fleet-grid{grid-template-columns:1fr;gap:40px}}
+
+    .fleet-copy .eyebrow{margin-bottom:16px}
+    .fleet-copy h2{margin-bottom:20px;max-width:440px}
+    .fleet-copy p{font-size:17px;color:var(--muted);line-height:1.7;max-width:440px}
+
+    .fleet-dl{margin-top:36px;display:flex;flex-direction:column;gap:0}
+    .fleet-item{
+      display:flex;gap:20px;padding:20px 0;
+      border-top:1px solid var(--border);
+    }
+    .fleet-item:first-child{border-top:none;padding-top:0}
+    .fleet-num{font-family:'Fraunces',serif;font-size:13px;color:var(--brass);padding-top:2px;min-width:20px}
+    .fleet-title{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:4px}
+    .fleet-desc{font-size:13px;color:var(--muted);line-height:1.6}
+
+    .fleet-cta{
+      display:inline-flex;align-items:center;gap:8px;
+      margin-top:32px;background:var(--ink);color:var(--canvas);
+      font-size:13px;font-weight:500;padding:11px 20px;
+      border-radius:40px;text-decoration:none;transition:opacity .2s;
+    }
+    .fleet-cta:hover{opacity:.85}
+
+    .fleet-imgs{display:flex;flex-direction:column;gap:14px}
+    .fleet-img-main{overflow:hidden;border-radius:12px;box-shadow:0 1px 0 rgba(0,0,0,.06)}
+    .fleet-img-main img{width:100%;aspect-ratio:4/5;object-fit:cover}
+    .fleet-img-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .fleet-img-sm{overflow:hidden;border-radius:12px;box-shadow:0 1px 0 rgba(0,0,0,.06)}
+    .fleet-img-sm img{width:100%;aspect-ratio:1;object-fit:cover}
+
+    /* ── PHILOSOPHY ────────────────────────────────────────── */
+    #philosophy{background:var(--mahogany);padding:96px 24px;color:var(--mah-fg);text-align:center}
+    #philosophy .eyebrow{color:var(--brass);margin-bottom:20px}
+    #philosophy h2{
+      font-size:clamp(26px,4vw,46px);line-height:1.22;
+      max-width:700px;margin:0 auto;color:var(--mah-fg);
+    }
+    .phil-rule{width:48px;height:1px;background:rgba(154,124,58,.6);margin:36px auto}
+    .phil-body{font-size:17px;line-height:1.75;opacity:.85;max-width:560px;margin:0 auto}
+    .phil-tags{
+      display:flex;flex-wrap:wrap;justify-content:center;
+      gap:10px 36px;margin-top:44px;
+      font-size:11px;text-transform:uppercase;letter-spacing:.2em;opacity:.65;
     }
 
-    /* ── HEADER ─────────────────────────────── */
-    header {
-      background: rgba(249,247,242,0.92);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      padding: 13px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
+    /* ── FAQ ───────────────────────────────────────────────── */
+    #faq{padding:80px 24px}
+    #faq .wrap-sm .eyebrow{margin-bottom:16px}
+    #faq .wrap-sm h2{margin-bottom:40px;max-width:520px}
+    .faq-list{display:flex;flex-direction:column;gap:0}
+    .faq-item{border-top:1px solid var(--border)}
+    .faq-item:last-child{border-bottom:1px solid var(--border)}
+    .faq-q{
+      width:100%;background:none;border:none;padding:20px 0;
+      text-align:left;font-size:15px;font-weight:500;color:var(--ink);
+      display:flex;justify-content:space-between;align-items:center;gap:16px;
+      cursor:pointer;font-family:'Inter',sans-serif;
     }
-
-    .brand { display: flex; align-items: center; gap: 10px; }
-
-    .brand-icon {
-      width: 36px; height: 36px;
-      background: var(--mahogany);
-      border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
+    .faq-q:hover{color:var(--mahogany)}
+    .faq-chevron{font-size:11px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+    .faq-item.open .faq-chevron{transform:rotate(180deg)}
+    .faq-a{
+      display:none;padding-bottom:20px;
+      font-size:14px;color:var(--muted);line-height:1.75;
     }
+    .faq-item.open .faq-a{display:block}
 
-    .brand-text h1 {
-      font-family: 'Fraunces', serif;
-      font-size: 17px; font-weight: 700; letter-spacing: -0.2px;
-      color: var(--ink);
+    /* ── QUALIFIER ─────────────────────────────────────────── */
+    #qualifier{background:var(--sand);padding:80px 24px}
+    #qualifier .wrap-sm .eyebrow{margin-bottom:16px}
+    #qualifier .wrap-sm h2{margin-bottom:36px;max-width:520px}
+    .q-box{
+      background:var(--canvas);border:1px solid var(--border);
+      border-radius:16px;padding:40px;
     }
-    .brand-text p { font-size: 11px; color: var(--muted); margin-top: 1px; letter-spacing: 0.01em; }
-
-    .header-right { display: flex; align-items: center; gap: 10px; }
-
-    .status-badge {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 12px; color: var(--green);
-      background: rgba(58,155,111,0.1);
-      border: 1px solid rgba(58,155,111,0.25);
-      border-radius: 20px; padding: 5px 12px;
+    .q-pips{display:flex;gap:6px;margin-bottom:28px}
+    .q-pip{height:2px;flex:1;background:var(--border);border-radius:2px;transition:background .3s}
+    .q-pip.done{background:var(--mahogany)}
+    .q-pip.cur{background:rgba(74,30,18,.4)}
+    .q-num{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px}
+    .q-text{font-family:'Fraunces',serif;font-size:22px;color:var(--ink);margin-bottom:24px;line-height:1.3}
+    .q-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+    .q-opt{
+      display:flex;align-items:center;gap:14px;padding:14px 18px;
+      background:transparent;border:1px solid var(--border);border-radius:var(--radius);
+      cursor:pointer;text-align:left;color:var(--ink);font-size:14px;
+      font-family:'Inter',sans-serif;transition:all .15s;
     }
-
-    .status-dot {
-      width: 6px; height: 6px;
-      background: var(--green); border-radius: 50%;
-      animation: pulse 2s infinite;
+    .q-opt:hover{border-color:var(--brass);background:rgba(154,124,58,.05)}
+    .q-opt.sel{border-color:var(--mahogany);background:rgba(74,30,18,.05);color:var(--ink)}
+    .q-letter{
+      width:26px;height:26px;border-radius:50%;border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      font-size:11px;font-weight:600;color:var(--muted);flex-shrink:0;transition:all .15s;
     }
-
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-    #settings-btn {
-      background: none; border: 1px solid var(--border);
-      border-radius: 8px; width: 34px; height: 34px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; color: var(--muted); transition: all 0.15s;
+    .q-opt.sel .q-letter{background:var(--mahogany);border-color:var(--mahogany);color:var(--mah-fg)}
+    .q-nav{display:flex;gap:8px;justify-content:flex-end}
+    .q-btn{
+      padding:10px 20px;border-radius:40px;font-size:13px;
+      font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;
     }
-    #settings-btn:hover { border-color: var(--brass); color: var(--ink); }
+    .q-back{background:none;border:1px solid var(--border);color:var(--muted)}
+    .q-back:hover{border-color:var(--brass);color:var(--ink)}
+    .q-fwd{background:var(--mahogany);border:none;color:var(--mah-fg)}
+    .q-fwd:hover{opacity:.88}
+    .q-fwd:disabled{opacity:.35;cursor:not-allowed}
 
-    /* ── MODAL ──────────────────────────────── */
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(30,26,20,0.55);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 100; backdrop-filter: blur(6px);
+    .q-result{display:none;animation:fadeUp .3s ease}
+    .q-result.show{display:block}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .res-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+    .res-emoji{font-size:36px}
+    .res-tag{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--brass);margin-bottom:4px}
+    .res-name{font-family:'Fraunces',serif;font-size:26px;color:var(--ink)}
+    .res-body{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:22px}
+    .res-cta{
+      display:inline-flex;align-items:center;gap:8px;
+      background:var(--mahogany);color:var(--mah-fg);font-weight:500;font-size:13px;
+      padding:11px 22px;border-radius:40px;text-decoration:none;
+      border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .2s;
     }
-    .modal-overlay.hidden { display: none; }
+    .res-cta:hover{opacity:.88}
+    .res-reset{
+      background:none;border:1px solid var(--border);color:var(--muted);
+      font-size:13px;padding:10px 16px;border-radius:40px;cursor:pointer;
+      margin-left:8px;font-family:'Inter',sans-serif;transition:all .15s;
+    }
+    .res-reset:hover{border-color:var(--brass);color:var(--ink)}
+    @media(max-width:600px){.q-box{padding:22px}}
 
-    .modal {
-      background: var(--canvas);
-      border: 1px solid var(--border);
-      border-radius: 18px; padding: 32px;
-      width: 100%; max-width: 420px; margin: 20px;
-      box-shadow: 0 24px 56px rgba(30,26,20,0.18);
+    /* ── FOOTER ────────────────────────────────────────────── */
+    #dispatch{border-top:1px solid var(--border);background:var(--canvas);padding:72px 24px}
+    .foot-grid{
+      display:grid;grid-template-columns:1fr 1fr 1fr;gap:48px;
+      max-width:1200px;margin:0 auto;
     }
-
-    .modal-icon {
-      width: 48px; height: 48px;
-      background: var(--mahogany);
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; margin-bottom: 18px;
+    @media(max-width:780px){.foot-grid{grid-template-columns:1fr;gap:36px}}
+    .foot-brand{font-family:'Fraunces',serif;font-size:24px;color:var(--ink);display:block;margin-bottom:14px}
+    .foot-tagline{font-size:14px;color:var(--muted);max-width:240px;line-height:1.6}
+    .foot-col-label{
+      font-size:11px;font-weight:600;text-transform:uppercase;
+      letter-spacing:.2em;color:var(--muted);margin-bottom:16px;
     }
-
-    .modal h2 {
-      font-family: 'Fraunces', serif;
-      font-size: 22px; font-weight: 700; margin-bottom: 8px; color: var(--ink);
+    .foot-links{list-style:none;display:flex;flex-direction:column;gap:10px}
+    .foot-links a{font-size:14px;color:var(--ink-80);text-decoration:none;transition:color .2s}
+    .foot-links a:hover{color:var(--mahogany)}
+    .foot-links-row{display:grid;grid-template-columns:1fr 1fr;gap:0}
+    .foot-dispatch p{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6}
+    .foot-form{display:flex;gap:8px}
+    .foot-input{
+      flex:1;border:1px solid var(--border);border-radius:40px;
+      background:var(--sand);padding:9px 16px;font-size:13px;
+      outline:none;transition:border-color .2s,box-shadow .2s;
+      font-family:'Inter',sans-serif;color:var(--ink);
     }
-    .modal p  { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 20px; }
-    .modal p a { color: var(--mahogany); text-decoration: underline; text-underline-offset: 3px; }
-
-    .modal-steps {
-      background: var(--sand); border: 1px solid var(--border);
-      border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
-      font-size: 13px; color: var(--muted); line-height: 1.9;
+    .foot-input:focus{border-color:var(--brass);box-shadow:0 0 0 3px rgba(154,124,58,.15)}
+    .foot-input::placeholder{color:var(--muted)}
+    .foot-submit{
+      background:var(--mahogany);color:var(--mah-fg);border:none;
+      border-radius:40px;padding:9px 18px;font-size:13px;font-weight:500;
+      cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .2s;white-space:nowrap;
     }
-    .modal-steps strong { color: var(--ink); }
-
-    .modal-input {
-      width: 100%; background: var(--surface);
-      border: 1px solid var(--border); border-radius: 10px;
-      padding: 12px 14px; color: var(--ink);
-      font-size: 14px; font-family: monospace;
-      outline: none; transition: border-color 0.2s, box-shadow 0.2s; margin-bottom: 12px;
+    .foot-submit:hover{opacity:.88}
+    .foot-bottom{
+      max-width:1200px;margin:56px auto 0;padding-top:20px;
+      border-top:1px solid var(--border);
+      display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+      font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--muted);
     }
-    .modal-input:focus { border-color: var(--brass); box-shadow: 0 0 0 3px rgba(154,124,58,0.15); }
-    .modal-input.error { border-color: #c0392b; }
-
-    .modal-error { font-size: 12px; color: #c0392b; margin-bottom: 12px; display: none; }
-    .modal-error.visible { display: block; }
-
-    .modal-btn {
-      width: 100%; background: var(--mahogany); color: var(--mah-fg);
-      border: none; border-radius: 40px; padding: 13px;
-      font-size: 14px; font-weight: 600; cursor: pointer;
-      font-family: 'Inter', sans-serif; transition: opacity 0.2s;
-    }
-    .modal-btn:hover { opacity: 0.88; }
-
-    /* ── CHAT WINDOW ────────────────────────── */
-    #chat-window {
-      flex: 1; overflow-y: auto;
-      padding: 24px 20px;
-      display: flex; flex-direction: column; gap: 14px;
-      scroll-behavior: smooth;
-      background: var(--sand);
-    }
-
-    #chat-window::-webkit-scrollbar { width: 3px; }
-    #chat-window::-webkit-scrollbar-track { background: transparent; }
-    #chat-window::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-    .message {
-      display: flex; gap: 10px; max-width: 780px;
-      animation: fadeIn 0.2s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(5px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .message.user { align-self: flex-end; flex-direction: row-reverse; }
-    .message.bot  { align-self: flex-start; }
-
-    .avatar {
-      width: 32px; height: 32px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px; flex-shrink: 0; margin-top: 2px;
-    }
-    .avatar.bot  { background: var(--mahogany); }
-    .avatar.user { background: var(--border); }
-
-    .bubble {
-      padding: 11px 15px; border-radius: var(--radius);
-      font-size: 14px; line-height: 1.65; max-width: 560px;
-    }
-    .message.bot .bubble {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-top-left-radius: 4px;
-      color: var(--ink);
-      box-shadow: 0 1px 3px rgba(30,26,20,0.06);
-    }
-    .message.user .bubble {
-      background: var(--mahogany);
-      color: var(--mah-fg);
-      border-top-right-radius: 4px;
-    }
-
-    .bubble p + p { margin-top: 7px; }
-    .bubble ul, .bubble ol { padding-left: 18px; margin-top: 5px; }
-    .bubble li { margin-bottom: 3px; }
-    .bubble strong { color: var(--mahogany); }
-    .message.user .bubble strong { color: #f5d9a8; }
-    .bubble code {
-      background: rgba(154,124,58,0.12); padding: 1px 5px;
-      border-radius: 4px; font-family: monospace; font-size: 13px;
-    }
-
-    /* typing */
-    .typing-indicator { display: flex; align-items: center; gap: 5px; padding: 12px 15px; }
-    .typing-dot {
-      width: 6px; height: 6px; background: var(--border);
-      border-radius: 50%; animation: bounce 1.2s infinite;
-    }
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes bounce {
-      0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)}
-    }
-
-    /* ── SUGGESTIONS ────────────────────────── */
-    #suggestions {
-      padding: 10px 20px 14px;
-      display: flex; gap: 7px; flex-wrap: wrap; flex-shrink: 0;
-      background: var(--sand);
-      border-top: 1px solid var(--border);
-    }
-    #suggestions.hidden { display: none; }
-
-    .suggestion-chip {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 20px; padding: 6px 13px;
-      font-size: 12px; color: var(--muted);
-      cursor: pointer; transition: all 0.15s;
-      font-family: 'Inter', sans-serif;
-    }
-    .suggestion-chip:hover { border-color: var(--brass); color: var(--ink); }
-
-    /* ── RATE BAR ───────────────────────────── */
-    #rate-bar {
-      padding: 5px 20px; font-size: 12px;
-      color: #b45309; display: none; flex-shrink: 0;
-      background: var(--sand);
-    }
-
-    /* ── INPUT BAR ──────────────────────────── */
-    #input-bar {
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      padding: 14px 16px; display: flex; gap: 10px;
-      align-items: flex-end; flex-shrink: 0;
-    }
-
-    #user-input {
-      flex: 1; background: var(--sand);
-      border: 1px solid var(--border); border-radius: 10px;
-      padding: 11px 15px; color: var(--ink);
-      font-size: 14px; resize: none; outline: none;
-      max-height: 130px; line-height: 1.5;
-      font-family: 'Inter', sans-serif;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    #user-input:focus {
-      border-color: var(--brass);
-      box-shadow: 0 0 0 3px rgba(154,124,58,0.12);
-    }
-    #user-input::placeholder { color: var(--muted); }
-
-    #send-btn {
-      width: 42px; height: 42px; background: var(--mahogany);
-      border: none; border-radius: 10px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: opacity 0.2s, transform 0.1s; flex-shrink: 0;
-    }
-    #send-btn:hover { opacity: 0.88; }
-    #send-btn:active { transform: scale(0.95); }
-    #send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-    #send-btn svg { width: 17px; height: 17px; fill: var(--mah-fg); }
-
-    .error-msg {
-      color: #9b1c1c; font-size: 13px; padding: 8px 12px;
-      background: rgba(155,28,28,0.07);
-      border: 1px solid rgba(155,28,28,0.18); border-radius: 8px;
-    }
-
-    @media (max-width: 600px) {
-      .bubble { max-width: 88vw; }
-      #suggestions { gap: 5px; }
-    }
+    .foot-bottom-links{display:flex;gap:24px}
+    .foot-bottom-links a{color:var(--muted);text-decoration:none;transition:color .2s}
+    .foot-bottom-links a:hover{color:var(--ink)}
   </style>
 </head>
 <body>
 
-<div class="modal-overlay" id="modal">
-  <div class="modal">
-    <div class="modal-icon">🚂</div>
-    <h2>Connect Remy — it's free</h2>
-    <p>This chatbot runs on <strong style="color:var(--text)">Groq</strong>. Free account — no credit card needed.</p>
-    <div class="modal-steps">
-      <strong>1.</strong> Go to <a href="https://console.groq.com" target="_blank">console.groq.com</a> and sign up (email only)<br>
-      <strong>2.</strong> Click <strong>"API Keys"</strong> in the left sidebar<br>
-      <strong>3.</strong> Create a key, copy it, and paste it below
+<!-- ── NAV ──────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">RailNest</a>
+    <div class="nav-links">
+      <a href="#journeys">Journeys</a>
+      <a href="#fleet">The Fleet</a>
+      <a href="#philosophy">Philosophy</a>
+      <a href="#dispatch">Dispatch</a>
     </div>
-    <input class="modal-input" id="modal-key-input" type="password" placeholder="Paste your Groq API key…" autocomplete="off" />
-    <div class="modal-error" id="modal-error">Key looks too short — please paste the full key from Groq.</div>
-    <button class="modal-btn" id="modal-save-btn">Start chatting — it's free</button>
+    <a href="#journeys" class="nav-cta">Book a journey</a>
   </div>
-</div>
+</nav>
 
-<header>
-  <div class="brand">
-    <div class="brand-icon">🚂</div>
-    <div class="brand-text">
-      <h1>RailNest</h1>
-      <p>Scenic Heritage Rail Journeys</p>
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-wrap">
+    <div class="hero-text">
+      <span class="eyebrow">Est. 1942 · Heritage rail collective</span>
+      <h1>The art of the<br>slow arrival.</h1>
+      <p class="hero-sub">Curated expeditions across the American Southwest and Pacific Coast, aboard restored heritage railcars where the passage is as considered as the destination.</p>
+    </div>
+
+    <div class="hero-img-wrap">
+      <img src="knowledge-base/assets/hero-canyon-train.jpg" alt="Vintage train winding through a desert canyon at golden hour" loading="eager">
+      <div class="hero-img-overlay"></div>
+      <div class="hero-img-caption">
+        <div>
+          <p class="hero-caption-label">Now departing</p>
+          <p class="hero-caption-name">The Silver Meteor · Arizona Rim</p>
+        </div>
+        <a href="#journeys" class="hero-caption-btn">View October schedule →</a>
+      </div>
+    </div>
+
+    <div class="stats-strip">
+      <div><p class="stat-n">12</p><p class="stat-l">Heritage operators</p></div>
+      <div><p class="stat-n">4,200+</p><p class="stat-l">Miles preserved</p></div>
+      <div><p class="stat-n">1920s</p><p class="stat-l">Fleet vintage</p></div>
+      <div><p class="stat-n">38</p><p class="stat-l">Curated routes</p></div>
     </div>
   </div>
-  <div class="header-right">
-    <div class="status-badge">
-      <span class="status-dot"></span>
-      Remy is online
+</section>
+
+<!-- ── JOURNEYS ──────────────────────────────────────────────── -->
+<section id="journeys">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Heritage routes</span>
+        <h2>Selected expeditions</h2>
+      </div>
+      <a href="#" class="view-all">View all 38 routes</a>
     </div>
-    <button id="settings-btn" title="Change API key">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+
+    <div class="journey-grid">
+      <article class="journey-card">
+        <div class="journey-img"><img src="knowledge-base/assets/journey-verde-canyon.jpg" alt="Verde Canyon Heritage" loading="lazy"></div>
+        <div class="journey-meta">
+          <h3 class="journey-name">Verde Canyon Heritage</h3>
+          <span class="journey-dur">4 hours</span>
+        </div>
+        <p class="journey-region">Sedona, Arizona</p>
+        <p class="journey-blurb">Through the red-rock riparian corridor only reachable by rail. Open-air viewing cars and bald eagle sightings each January.</p>
+        <div class="journey-foot">
+          <span>Year-round</span>
+          <span class="journey-dot"></span>
+          <span>40 mi</span>
+          <span class="journey-reserve">Reserve →</span>
+        </div>
+      </article>
+
+      <article class="journey-card">
+        <div class="journey-img"><img src="knowledge-base/assets/journey-coast-starlight.jpg" alt="Coast Starlight Heritage" loading="lazy"></div>
+        <div class="journey-meta">
+          <h3 class="journey-name">Coast Starlight Heritage</h3>
+          <span class="journey-dur">2 days</span>
+        </div>
+        <p class="journey-region">San Luis Obispo, California</p>
+        <p class="journey-blurb">Overnight Pullman sleepers tracking the Pacific edge from the Central Coast cliffs into the Cascade foothills.</p>
+        <div class="journey-foot">
+          <span>Spring – Fall</span>
+          <span class="journey-dot"></span>
+          <span>470 mi</span>
+          <span class="journey-reserve">Reserve →</span>
+        </div>
+      </article>
+
+      <article class="journey-card">
+        <div class="journey-img"><img src="knowledge-base/assets/journey-napa-wine.jpg" alt="Napa Valley Wine Train" loading="lazy"></div>
+        <div class="journey-meta">
+          <h3 class="journey-name">Napa Valley Wine Train</h3>
+          <span class="journey-dur">3 hours</span>
+        </div>
+        <p class="journey-region">Napa, California</p>
+        <p class="journey-blurb">Restored 1917 Pullman dining cars through St. Helena vineyards. Six-course tasting menu paired in the Vista Dome.</p>
+        <div class="journey-foot">
+          <span>Year-round</span>
+          <span class="journey-dot"></span>
+          <span>36 mi</span>
+          <span class="journey-reserve">Reserve →</span>
+        </div>
+      </article>
+
+      <article class="journey-card">
+        <div class="journey-img"><img src="knowledge-base/assets/journey-grand-canyon.jpg" alt="Grand Canyon Rim Overnight" loading="lazy"></div>
+        <div class="journey-meta">
+          <h3 class="journey-name">Grand Canyon Rim Overnight</h3>
+          <span class="journey-dur">2 days</span>
+        </div>
+        <p class="journey-region">Williams, Arizona</p>
+        <p class="journey-blurb">Steam-hauled service to the South Rim with a single night at El Tovar and a sunrise observation-car return.</p>
+        <div class="journey-foot">
+          <span>Mar – Nov</span>
+          <span class="journey-dot"></span>
+          <span>130 mi</span>
+          <span class="journey-reserve">Reserve →</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ── FLEET ──────────────────────────────────────────────────── -->
+<section id="fleet">
+  <div class="fleet-grid">
+    <div class="fleet-copy">
+      <span class="eyebrow">The fleet</span>
+      <h2>Know your vantage point before you board.</h2>
+      <p>Heritage cars are not interchangeable. Seat orientation, window dimensions, and cabin type vary dramatically car-to-car. We map every detail so you choose the seat, not just the train.</p>
+
+      <div class="fleet-dl">
+        <div class="fleet-item">
+          <span class="fleet-num">01</span>
+          <div><p class="fleet-title">Vista Dome</p><p class="fleet-desc">360° panoramic glass ceilings — best for the Sierra climb and canyon rim approach.</p></div>
+        </div>
+        <div class="fleet-item">
+          <span class="fleet-num">02</span>
+          <div><p class="fleet-title">Sunset Parlor</p><p class="fleet-desc">Swivel armchairs oriented west for Pacific sunsets. Private reservation only.</p></div>
+        </div>
+        <div class="fleet-item">
+          <span class="fleet-num">03</span>
+          <div><p class="fleet-title">Pullman Sleeper</p><p class="fleet-desc">Restored 1948 berths with full-height bay windows. Overnight routes only.</p></div>
+        </div>
+        <div class="fleet-item">
+          <span class="fleet-num">04</span>
+          <div><p class="fleet-title">Open Observation</p><p class="fleet-desc">Brass-railed rear deck — open to weather, open to view. Seasonal availability.</p></div>
+        </div>
+      </div>
+
+      <a href="#" class="fleet-cta">Explore fleet schematics →</a>
+    </div>
+
+    <div class="fleet-imgs">
+      <div class="fleet-img-main"><img src="knowledge-base/assets/fleet-interior.jpg" alt="Vintage train passenger car interior" loading="lazy"></div>
+      <div class="fleet-img-row">
+        <div class="fleet-img-sm"><img src="knowledge-base/assets/fleet-brass-detail.jpg" alt="Brass rail detail on a heritage train" loading="lazy"></div>
+        <div class="fleet-img-sm"><img src="knowledge-base/assets/fleet-window-view.jpg" alt="View from a train window across a mountain landscape" loading="lazy"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PHILOSOPHY ─────────────────────────────────────────────── -->
+<section id="philosophy">
+  <div class="wrap-sm">
+    <span class="eyebrow">Our philosophy</span>
+    <h2>"The rhythm of the rails is the last refuge of the contemplative traveller."</h2>
+    <div class="phil-rule"></div>
+    <p class="phil-body">Every reservation supports the operators preserving these routes — their restoration shops, their archives, and the slow, deliberate craft of keeping a 1940s observation car on the rails for another century.</p>
+    <div class="phil-tags">
+      <span>Non-digital quiet cars</span>
+      <span>Sommelier service</span>
+      <span>Berth concierge</span>
+      <span>Carbon-neutral ticketing</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ────────────────────────────────────────────────────── -->
+<section id="faq">
+  <div class="wrap-sm">
+    <span class="eyebrow">Before you board</span>
+    <h2>Questions we know you'll ask.</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q">How do I know my seat will match the description?<span class="faq-chevron">▼</span></button>
+        <div class="faq-a">Your car type, position, direction of travel, and window size are confirmed in your booking receipt and on your ticket. If anything changes before departure, we notify you within 24 hours and offer a free seat swap or a full refund — your choice.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What's the difference between a Vista Dome and a Pullman Sleeper?<span class="faq-chevron">▼</span></button>
+        <div class="faq-a">The Vista Dome is a shared open car with 360° panoramic glass — social, day-use, best for mountain and canyon passes. The Pullman Sleeper is a private enclosed berth with full-height bay windows, converting from seating to a full bed for overnight routes. Different products at different prices, clearly labelled before you book.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Can I change my seat after booking?<span class="faq-chevron">▼</span></button>
+        <div class="faq-a">Yes — free if requested 48 or more hours before departure. A $25 admin fee applies between 24–48 hours. No changes inside 24 hours, as cars are sealed and manifests locked for operations.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What's included — and what costs extra?<span class="faq-chevron">▼</span></button>
+        <div class="faq-a">Every ticket listing specifies seat type, whether meal service is included, shared vs. private car, direction of travel, and available add-ons. Wine, spirits, and dining upgrades are itemised separately. Nothing appears as a surprise line item at checkout.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What are the refund terms?<span class="faq-chevron">▼</span></button>
+        <div class="faq-a">Full refund if cancelled 7 or more days before departure. 50% refund for cancellations 3–7 days before. No refund inside 3 days, though you may transfer your booking to another traveller at no charge.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── QUALIFIER ──────────────────────────────────────────────── -->
+<section id="qualifier">
+  <div class="wrap-sm">
+    <span class="eyebrow">Find your journey</span>
+    <h2>Is a RailNest expedition right for you?</h2>
+    <div class="q-box">
+      <div id="q-screen">
+        <div class="q-pips" id="q-pips"></div>
+        <div class="q-num" id="q-num"></div>
+        <div class="q-text" id="q-text"></div>
+        <div class="q-opts" id="q-opts"></div>
+        <div class="q-nav">
+          <button class="q-btn q-back" id="q-back">← Back</button>
+          <button class="q-btn q-fwd" id="q-fwd" disabled>Next →</button>
+        </div>
+      </div>
+      <div class="q-result" id="q-result"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────── -->
+<footer id="dispatch">
+  <div class="foot-grid">
+    <div>
+      <span class="foot-brand">RailNest</span>
+      <p class="foot-tagline">Quiet luxury for the traveller seeking the heritage of the American West. By rail, on purpose.</p>
+    </div>
+    <div class="foot-links-row">
+      <div>
+        <p class="foot-col-label">Destinations</p>
+        <ul class="foot-links">
+          <li><a href="#">Arizona canyons</a></li>
+          <li><a href="#">Napa Valley</a></li>
+          <li><a href="#">Pacific Coast</a></li>
+          <li><a href="#">Sierra Nevada</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-col-label">Company</p>
+        <ul class="foot-links">
+          <li><a href="#">Our story</a></li>
+          <li><a href="#">Fleet archive</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-dispatch">
+      <p class="foot-col-label">The dispatch</p>
+      <p>Seasonal route releases, rare cabin unlocks, and the occasional archival photograph.</p>
+      <form class="foot-form" onsubmit="return false">
+        <input class="foot-input" type="email" placeholder="Email address">
+        <button class="foot-submit" type="submit">Join</button>
+      </form>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 RailNest Heritage Co.</span>
+    <div class="foot-bottom-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── FAQ ─────────────────────────────────────────────────────── */
+document.querySelectorAll('.faq-item').forEach(item => {
+  item.querySelector('.faq-q').addEventListener('click', () => {
+    const was = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!was) item.classList.add('open');
+  });
+});
+
+/* ── QUALIFIER ───────────────────────────────────────────────── */
+const QS = [
+  { text:'What matters most to your ideal rail experience?', opts:[
+    {l:'Floor-to-ceiling panoramic glass — I want to feel inside the landscape',s:3},
+    {l:'A classic window seat with rolling scenery is perfect',s:2},
+    {l:'Social atmosphere — great company, great drinks, moving backdrop',s:1},
+    {l:'Arriving somewhere beautiful without an airport',s:0}
+  ]},
+  { text:'How do you prefer to travel?', opts:[
+    {l:'Private — just me or my travel partner, no shared space',s:3},
+    {l:'Our group, with occasional friendly interaction',s:2},
+    {l:'Open and social — I love meeting fellow travellers',s:1},
+    {l:'Whatever\'s available and works',s:0}
+  ]},
+  { text:'What\'s your preferred journey length?', opts:[
+    {l:'Overnight — I want to wake up somewhere completely new',s:3},
+    {l:'A full day — 6 to 9 hours of scenery',s:2},
+    {l:'A half-day excursion — 4 to 6 hours',s:1},
+    {l:'Short as possible, great views as a bonus',s:0}
+  ]},
+  { text:'Which sounds like your ideal RailNest moment?', opts:[
+    {l:'Canyon walls appearing outside my berth window at dawn',s:3},
+    {l:'A Pacific sunset from a wide window seat, drink in hand',s:2},
+    {l:'Something cold in a dome car as the desert turns orange',s:1},
+    {l:'Arriving refreshed, no middle seat, no security queue',s:0}
+  ]},
+  { text:'What\'s your budget per person?', opts:[
+    {l:'$500–$1,000 — I want something genuinely special',s:3},
+    {l:'$200–$500 — a considered splurge',s:2},
+    {l:'Under $200 — value matters',s:1},
+    {l:'Price is secondary to the right experience',s:3}
+  ]}
+];
+
+const TIERS = [
+  { min:11, emoji:'🔭', name:'The Panorama Seeker',
+    body:'You want full immersion — glass on three sides, private space, the canyon at dawn. Your journey is the <strong>Grand Canyon Rim Overnight</strong> in a Pullman Sleeper. You\'ll wake up inside the landscape, not just looking at it.',
+    cta:'Reserve the Canyon Rim Overnight →', href:'mailto:hello@railnest.com?subject=Canyon Rim Overnight' },
+  { min:5, emoji:'🪟', name:'The Scenic Traveller',
+    body:'You want great scenery and a comfortable seat without paying for a private berth you won\'t use. Your journey is the <strong>Coast Starlight Heritage</strong> or <strong>Verde Canyon</strong> in a Vista Dome or window seat.',
+    cta:'Explore scenic day routes →', href:'mailto:hello@railnest.com?subject=Scenic Routes' },
+  { min:0, emoji:'🏛️', name:'The Heritage Explorer',
+    body:'You\'re here for the train itself — the vintage cars, the slow pace, the story. Your journey is the <strong>Napa Valley Wine Train</strong> in a restored 1917 Pullman dining car. Short, atmospheric, unhurried.',
+    cta:'Book the Napa Valley Wine Train →', href:'mailto:hello@railnest.com?subject=Napa Valley Wine Train' }
+];
+
+let cur = 0;
+const ans = [];
+const LETTERS = ['A','B','C','D'];
+
+const qScreen = document.getElementById('q-screen');
+const qResult = document.getElementById('q-result');
+const qPips   = document.getElementById('q-pips');
+const qNum    = document.getElementById('q-num');
+const qText   = document.getElementById('q-text');
+const qOpts   = document.getElementById('q-opts');
+const qBack   = document.getElementById('q-back');
+const qFwd    = document.getElementById('q-fwd');
+
+function renderPips(){
+  qPips.innerHTML = QS.map((_,i) =>
+    `<div class="q-pip ${i<cur?'done':i===cur?'cur':''}"></div>`).join('');
+}
+function renderQ(){
+  const q = QS[cur];
+  qNum.textContent = `Question ${cur+1} of ${QS.length}`;
+  qText.textContent = q.text;
+  const sel = ans[cur] ?? null;
+  qOpts.innerHTML = q.opts.map((o,i) => `
+    <button class="q-opt${sel===i?' sel':''}" data-i="${i}">
+      <span class="q-letter">${LETTERS[i]}</span>${o.l}
+    </button>`).join('');
+  qOpts.querySelectorAll('.q-opt').forEach(b =>
+    b.addEventListener('click', () => { ans[cur]=parseInt(b.dataset.i); renderQ(); qFwd.disabled=false; }));
+  qFwd.disabled = sel===null||sel===undefined;
+  qBack.style.visibility = cur===0?'hidden':'visible';
+  qFwd.textContent = cur===QS.length-1?'See my result →':'Next →';
+  renderPips();
+}
+qBack.addEventListener('click', ()=>{ if(cur>0){cur--;renderQ();} });
+qFwd.addEventListener('click', ()=>{
+  if(ans[cur]===undefined) return;
+  if(cur<QS.length-1){ cur++;renderQ(); } else { showResult(); }
+});
+function showResult(){
+  const total = ans.reduce((s,a,q)=>s+QS[q].opts[a].s,0);
+  const tier = TIERS.find(t=>total>=t.min);
+  qScreen.style.display='none';
+  qResult.innerHTML=`
+    <div class="res-top">
+      <div class="res-emoji">${tier.emoji}</div>
+      <div><div class="res-tag">Your RailNest journey</div><div class="res-name">${tier.name}</div></div>
+    </div>
+    <div class="res-body">${tier.body}</div>
+    <a href="${tier.href}" class="res-cta">${tier.cta}</a>
+    <button class="res-reset" id="restart">↩ Start over</button>`;
+  qResult.classList.add('show');
+  document.getElementById('restart').addEventListener('click',()=>{
+    cur=0;ans.length=0;
+    qResult.classList.remove('show');qResult.innerHTML='';
+    qScreen.style.display='';renderQ();
+  });
+}
+renderQ();
+</script>
+
+<!-- ── CHAT WIDGET ────────────────────────────────────────────── -->
+
+<!-- Floating button -->
+<button id="chat-fab" aria-label="Chat with Remy" title="Chat with Remy">
+  <svg id="fab-icon-open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+  <svg id="fab-icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:none">
+    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+  <span id="fab-label">Ask Remy</span>
+</button>
+
+<!-- Chat panel -->
+<div id="chat-panel" aria-hidden="true">
+  <div class="chat-panel-header">
+    <div class="chat-panel-identity">
+      <div class="chat-panel-avatar">🚂</div>
+      <div>
+        <div class="chat-panel-name">Remy</div>
+        <div class="chat-panel-status"><span class="chat-online-dot"></span>RailNest Concierge</div>
+      </div>
+    </div>
+    <button class="chat-panel-close" id="chat-close" aria-label="Close chat">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
       </svg>
     </button>
   </div>
-</header>
-
-<div id="chat-window"></div>
-
-<div id="suggestions">
-  <span class="suggestion-chip" onclick="sendSuggestion(this)">What's the difference between seat types?</span>
-  <span class="suggestion-chip" onclick="sendSuggestion(this)">I want panoramic views — what should I book?</span>
-  <span class="suggestion-chip" onclick="sendSuggestion(this)">Can I change my seat after booking?</span>
-  <span class="suggestion-chip" onclick="sendSuggestion(this)">What routes do you offer?</span>
+  <iframe id="chat-iframe" src="chatbot.html" title="RailNest Concierge — Remy" allow="clipboard-write"></iframe>
 </div>
 
-<div id="rate-bar"></div>
+<!-- Tooltip nudge (shows once, disappears after interaction) -->
+<div id="chat-nudge">Need help choosing? Ask Remy →</div>
 
-<div id="input-bar">
-  <textarea id="user-input" placeholder="Ask Remy anything about your journey…" rows="1"></textarea>
-  <button id="send-btn" disabled>
-    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-  </button>
-</div>
-
-<script type="module">
-  const SYSTEM_PROMPT = `You are Remy, the friendly customer service chatbot for RailNest — a boutique train ticket booking service specializing in scenic heritage railways across the American Southwest and Pacific Coast.
-
-RailNest offers these routes:
-- Wine Country Express: Napa Valley → Santa Barbara (day trip, 6 hrs)
-- Canyon Rim Overnight: Flagstaff → Moab (overnight, 14 hrs)
-- Pacific Sunset Route: San Francisco → San Diego (day trip, 9 hrs)
-- Desert Bloom Daytrip: Tucson → Sedona (day trip, 4 hrs)
-
-SEAT TYPES — explain these clearly, as 80% of complaints stem from confusion here:
-- Standard Window Seat: Individual reclining seat beside a standard double-pane window. NOT panoramic. Faces forward on most cars, but Heritage Coach cars have some backward-facing seats.
-- Observation Berth: Private enclosed mini-cabin for 2, floor-to-ceiling panoramic curved glass on three sides. Premium tier. Best for couples or solo travelers wanting the view.
-- Lounge Car Seat: Open shared car with a 180° glass dome ceiling. Social atmosphere, no assigned seats, first-come first-served within the car. Great for meeting fellow travelers.
-- Sleeper Cabin: Available on overnight routes only (Canyon Rim). Converts from day seating to two bunk beds at night. Has a small porthole-style side window only — not panoramic.
-- Heritage Coach: Vintage restored 1940s-era bench seating. Charming and atmospheric. Windows do not open; every other row faces backward. Best for rail enthusiasts who love the historic feel.
-
-POLICIES:
-- Seat/cabin changes: Free if requested 48+ hours before departure. $25 fee for 24–48 hours before. No changes within 24 hours.
-- Refunds: 100% refund if cancelled 7+ days before departure. 50% refund 3–7 days before. No refund under 3 days.
-- Booking: railnest.com or 1-800-RAILNEST (Mon–Fri 8am–8pm PT)
-- Group bookings (6+): 10% discount, contact groups@railnest.com
-
-YOUR BEHAVIOR:
-- Always ask clarifying questions before recommending a seat type: Do they want privacy or social? Day or overnight? Views or historic charm?
-- Be warm and enthusiastic about rail travel. Use occasional gentle train idioms but don't overdo it.
-- For complaints about seat types after booking: empathize first, then apply the change/refund policy firmly but kindly.
-- Keep responses concise — 3–5 sentences max unless explaining seat types in detail.
-- Never make up route details, prices, or policies not listed above.`;
-
-  const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-  const MODEL        = "llama-3.3-70b-versatile";
-  const MAX_RPM      = 30; // Groq free tier limit
-
-  // Sliding-window rate limiter
-  const requestTimes = [];
-  let rateBarTimer = null;
-
-  function canSend() {
-    const now = Date.now();
-    while (requestTimes.length && now - requestTimes[0] > 60000) requestTimes.shift();
-    return requestTimes.length < MAX_RPM;
+<style>
+  /* FAB button */
+  #chat-fab {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: var(--mahogany);
+    color: var(--mah-fg);
+    border: none;
+    border-radius: 40px;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 24px rgba(74,30,18,.35), 0 1px 4px rgba(0,0,0,.15);
+    transition: transform .2s, box-shadow .2s, border-radius .25s;
+    white-space: nowrap;
   }
-  function recordRequest() { requestTimes.push(Date.now()); }
-  function waitSeconds() {
-    if (requestTimes.length < MAX_RPM) return 0;
-    return Math.ceil((60000 - (Date.now() - requestTimes[0])) / 1000);
+  #chat-fab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(74,30,18,.4), 0 2px 8px rgba(0,0,0,.15);
   }
-  function showRateBar(msg) {
-    clearInterval(rateBarTimer);
-    rateBar.style.display = "block";
-    rateBar.textContent = msg;
-    rateBarTimer = setInterval(() => {
-      const secs = waitSeconds();
-      if (secs <= 0) {
-        clearInterval(rateBarTimer);
-        rateBar.style.display = "none";
-      } else {
-        rateBar.textContent = `⚠ Rate limit — sending again in ${secs}s (free tier: ${MAX_RPM} req/min).`;
-      }
-    }, 1000);
+  #chat-fab:active { transform: translateY(0); }
+  #chat-fab.open {
+    border-radius: 50%;
+    padding: 14px;
   }
+  #chat-fab.open #fab-label { display: none; }
 
-  let apiKey = null;
-  let history = []; // { role, content }
-  let isStreaming = false;
-
-  const chatWindow   = document.getElementById("chat-window");
-  const userInput    = document.getElementById("user-input");
-  const sendBtn      = document.getElementById("send-btn");
-  const suggestions  = document.getElementById("suggestions");
-  const rateBar      = document.getElementById("rate-bar");
-  const modal        = document.getElementById("modal");
-  const modalInput   = document.getElementById("modal-key-input");
-  const modalError   = document.getElementById("modal-error");
-  const modalSaveBtn = document.getElementById("modal-save-btn");
-  const settingsBtn  = document.getElementById("settings-btn");
-
-  function openModal() {
-    modalInput.value = "";
-    modalError.classList.remove("visible");
-    modalInput.classList.remove("error");
-    modal.classList.remove("hidden");
-    setTimeout(() => modalInput.focus(), 50);
+  /* Nudge tooltip */
+  #chat-nudge {
+    position: fixed;
+    bottom: 90px;
+    right: 28px;
+    z-index: 199;
+    background: var(--ink);
+    color: var(--canvas);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    padding: 10px 16px;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.18);
+    white-space: nowrap;
+    animation: nudgePop .4s ease .8s both;
+    cursor: pointer;
+  }
+  #chat-nudge::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    right: 28px;
+    width: 12px;
+    height: 12px;
+    background: var(--ink);
+    transform: rotate(45deg);
+    border-radius: 2px;
+  }
+  #chat-nudge.hidden { display: none; }
+  @keyframes nudgePop {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
-  function saveKey() {
-    const key = modalInput.value.trim();
-    if (key.length < 20) {
-      modalInput.classList.add("error");
-      modalError.classList.add("visible");
-      return;
+  /* Chat panel */
+  #chat-panel {
+    position: fixed;
+    bottom: 100px;
+    right: 28px;
+    z-index: 198;
+    width: 390px;
+    height: 580px;
+    background: #0f1117;
+    border-radius: 18px;
+    box-shadow: 0 16px 56px rgba(0,0,0,.28), 0 2px 8px rgba(0,0,0,.12);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(.9) translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform .25s cubic-bezier(.34,1.56,.64,1), opacity .2s ease;
+    transform-origin: bottom right;
+  }
+  #chat-panel.open {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* Panel header */
+  .chat-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: #1a1d27;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    flex-shrink: 0;
+  }
+  .chat-panel-identity { display: flex; align-items: center; gap: 10px; }
+  .chat-panel-avatar {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #4f8ef7, #7c5cbf);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .chat-panel-name { font-size: 14px; font-weight: 600; color: #e8f0ff; font-family: 'Inter', sans-serif; }
+  .chat-panel-status {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; color: #6888aa; font-family: 'Inter', sans-serif; margin-top: 1px;
+  }
+  .chat-online-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #00ff88;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  .chat-panel-close {
+    background: none; border: none; cursor: pointer;
+    color: #6888aa; padding: 6px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    transition: color .15s, background .15s;
+  }
+  .chat-panel-close:hover { color: #e8f0ff; background: rgba(255,255,255,.08); }
+
+  /* iframe fills rest of panel */
+  #chat-iframe {
+    flex: 1;
+    width: 100%;
+    border: none;
+    display: block;
+  }
+
+  /* Mobile: full-screen panel */
+  @media (max-width: 480px) {
+    #chat-panel {
+      width: calc(100vw - 24px);
+      height: 70dvh;
+      right: 12px;
+      bottom: 90px;
     }
-    apiKey = key;
-    localStorage.setItem("railnest_groq_key", key);
-    modal.classList.add("hidden");
-    sendBtn.disabled = false;
-    if (!chatWindow.children.length) greet();
-    userInput.focus();
+    #chat-fab { right: 16px; bottom: 20px; }
+    #chat-nudge { right: 16px; bottom: 80px; }
+  }
+</style>
+
+<script>
+  const fab       = document.getElementById('chat-fab');
+  const panel     = document.getElementById('chat-panel');
+  const closeBtn  = document.getElementById('chat-close');
+  const nudge     = document.getElementById('chat-nudge');
+  const iconOpen  = document.getElementById('fab-icon-open');
+  const iconClose = document.getElementById('fab-icon-close');
+  let isOpen = false;
+
+  function openChat() {
+    isOpen = true;
+    panel.classList.add('open');
+    panel.setAttribute('aria-hidden', 'false');
+    fab.classList.add('open');
+    iconOpen.style.display  = 'none';
+    iconClose.style.display = '';
+    nudge.classList.add('hidden');
   }
 
-  function greet() {
-    addBotMessage("All aboard! I'm Remy, your RailNest journey guide 🚂\n\nWhether you're planning a trip or need help with an existing booking, I'm here to keep things on track. What can I help you with today?");
+  function closeChat() {
+    isOpen = false;
+    panel.classList.remove('open');
+    panel.setAttribute('aria-hidden', 'true');
+    fab.classList.remove('open');
+    iconOpen.style.display  = '';
+    iconClose.style.display = 'none';
   }
 
-  // Boot
-  const savedKey = localStorage.getItem("railnest_groq_key");
-  if (savedKey) {
-    apiKey = savedKey;
-    modal.classList.add("hidden");
-    sendBtn.disabled = false;
-    greet();
-  } else {
-    openModal();
-  }
+  fab.addEventListener('click', () => isOpen ? closeChat() : openChat());
+  closeBtn.addEventListener('click', closeChat);
+  nudge.addEventListener('click', openChat);
 
-  modalSaveBtn.addEventListener("click", saveKey);
-  modalInput.addEventListener("keydown", e => { if (e.key === "Enter") saveKey(); });
-  settingsBtn.addEventListener("click", openModal);
+  // Hide nudge after 6 seconds
+  setTimeout(() => nudge.classList.add('hidden'), 6000);
 
-  userInput.addEventListener("input", () => {
-    userInput.style.height = "auto";
-    userInput.style.height = Math.min(userInput.scrollHeight, 140) + "px";
-  });
-
-  userInput.addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      if (!isStreaming) handleSend();
-    }
-  });
-
-  sendBtn.addEventListener("click", handleSend);
-
-  window.sendSuggestion = function(el) {
-    userInput.value = el.textContent;
-    suggestions.classList.add("hidden");
-    handleSend();
-  };
-
-  async function handleSend() {
-    const text = userInput.value.trim();
-    if (!text || isStreaming || !apiKey) return;
-
-    if (!canSend()) {
-      showRateBar(`⚠ Rate limit — sending again in ${waitSeconds()}s (free tier: ${MAX_RPM} req/min).`);
-      return;
-    }
-
-    clearInterval(rateBarTimer);
-    rateBar.style.display = "none";
-    suggestions.classList.add("hidden");
-    userInput.value = "";
-    userInput.style.height = "auto";
-
-    addUserMessage(text);
-    history.push({ role: "user", content: text });
-    recordRequest();
-    await streamResponse();
-  }
-
-  async function streamResponse() {
-    isStreaming = true;
-    sendBtn.disabled = true;
-
-    const typingEl = addTypingIndicator();
-
-    try {
-      const response = await fetch(GROQ_API_URL, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: MODEL,
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            ...history,
-          ],
-          stream: true,
-        }),
-      });
-
-      if (!response.ok) {
-        const errBody = await response.text();
-        throw new Error(`${response.status} ${errBody}`);
-      }
-
-      typingEl.remove();
-
-      let fullText = "";
-      const botEl = addBotMessage("", true);
-      const bubbleSpan = botEl.querySelector(".bubble-text");
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop();
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          const data = line.slice(6).trim();
-          if (data === "[DONE]") break;
-          try {
-            const json = JSON.parse(data);
-            fullText += json.choices?.[0]?.delta?.content ?? "";
-            bubbleSpan.innerHTML = markdownToHtml(fullText);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-          } catch {}
-        }
-      }
-
-      history.push({ role: "assistant", content: fullText });
-
-    } catch (err) {
-      typingEl?.remove();
-      const msg = String(err?.message ?? "");
-      if (msg.includes("429") || msg.toLowerCase().includes("rate")) {
-        showRateBar(`⚠ Rate limit hit — sending again in ${waitSeconds()}s (free tier: ${MAX_RPM} req/min).`);
-      } else if (msg.includes("401") || msg.includes("403") || msg.toLowerCase().includes("invalid api key")) {
-        addErrorMessage("Invalid API key — click the gear icon ⚙ to update it.");
-      } else {
-        addErrorMessage("Something went wrong — please try again.");
-      }
-    }
-
-    isStreaming = false;
-    sendBtn.disabled = false;
-    userInput.focus();
-  }
-
-  function addUserMessage(text) {
-    const el = document.createElement("div");
-    el.className = "message user";
-    el.innerHTML = `<div class="avatar user">👤</div><div class="bubble">${escapeHtml(text)}</div>`;
-    chatWindow.appendChild(el);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-    return el;
-  }
-
-  function addBotMessage(text, streaming = false) {
-    const el = document.createElement("div");
-    el.className = "message bot";
-    el.innerHTML = `<div class="avatar bot">🚂</div><div class="bubble"><span class="bubble-text">${streaming ? "" : markdownToHtml(text)}</span></div>`;
-    chatWindow.appendChild(el);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-    return el;
-  }
-
-  function addTypingIndicator() {
-    const el = document.createElement("div");
-    el.className = "message bot";
-    el.innerHTML = `<div class="avatar bot">🚂</div><div class="bubble typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>`;
-    chatWindow.appendChild(el);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-    return el;
-  }
-
-  function addErrorMessage(msg) {
-    const el = document.createElement("div");
-    el.className = "message bot";
-    el.innerHTML = `<div class="avatar bot">🚂</div><div class="bubble error-msg">${escapeHtml(msg)}</div>`;
-    chatWindow.appendChild(el);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-  }
-
-  function escapeHtml(str) {
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  }
-
-  function markdownToHtml(text) {
-    return text
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\*(.+?)\*/g, "<em>$1</em>")
-      .replace(/`(.+?)`/g, "<code>$1</code>")
-      .replace(/^#{1,3} (.+)$/gm, "<strong>$1</strong>")
-      .replace(/^- (.+)$/gm, "<li>$1</li>")
-      .replace(/(<li>[\s\S]*?<\/li>)/g, "<ul>$1</ul>")
-      .replace(/\n\n/g, "</p><p>")
-      .replace(/\n/g, "<br>");
-  }
+  // Close on Escape
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && isOpen) closeChat(); });
 </script>
 </body>
 </html>
