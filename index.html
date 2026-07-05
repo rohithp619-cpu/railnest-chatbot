@@ -308,14 +308,14 @@
   <div class="modal">
     <div class="modal-icon">🚂</div>
     <h2>Connect Remy — it's free</h2>
-    <p>This chatbot runs on <strong style="color:var(--text)">Google Gemini</strong>. No credit card needed.</p>
+    <p>This chatbot runs on <strong style="color:var(--text)">Groq</strong>. Free account — no credit card needed.</p>
     <div class="modal-steps">
-      <strong>1.</strong> Go to <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a> and sign in with Google<br>
-      <strong>2.</strong> Click <strong>"Get API key"</strong> in the top-left menu<br>
-      <strong>3.</strong> Copy your key and paste it below
+      <strong>1.</strong> Go to <a href="https://console.groq.com" target="_blank">console.groq.com</a> and sign up (email only)<br>
+      <strong>2.</strong> Click <strong>"API Keys"</strong> in the left sidebar<br>
+      <strong>3.</strong> Create a key, copy it, and paste it below
     </div>
-    <input class="modal-input" id="modal-key-input" type="password" placeholder="Paste your Google AI Studio key…" autocomplete="off" />
-    <div class="modal-error" id="modal-error">Key looks too short — please paste the full key from Google AI Studio.</div>
+    <input class="modal-input" id="modal-key-input" type="password" placeholder="Paste your Groq API key…" autocomplete="off" />
+    <div class="modal-error" id="modal-error">Key looks too short — please paste the full key from Groq.</div>
     <button class="modal-btn" id="modal-save-btn">Start chatting — it's free</button>
   </div>
 </div>
@@ -361,8 +361,6 @@
 </div>
 
 <script type="module">
-  import { GoogleGenAI } from "https://esm.sh/@google/genai@2.10.0";
-
   const SYSTEM_PROMPT = `You are Remy, the friendly customer service chatbot for RailNest — a boutique train ticket booking service specializing in scenic heritage railways across the American Southwest and Pacific Coast.
 
 RailNest offers these routes:
@@ -391,8 +389,9 @@ YOUR BEHAVIOR:
 - Keep responses concise — 3–5 sentences max unless explaining seat types in detail.
 - Never make up route details, prices, or policies not listed above.`;
 
-  const MODEL   = "gemini-2.0-flash";
-  const MAX_RPM = 15; // gemini-2.0-flash free tier limit (1,500 req/day)
+  const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+  const MODEL        = "llama-3.3-70b-versatile";
+  const MAX_RPM      = 30; // Groq free tier limit
 
   // Sliding-window rate limiter
   const requestTimes = [];
@@ -412,7 +411,6 @@ YOUR BEHAVIOR:
     clearInterval(rateBarTimer);
     rateBar.style.display = "block";
     rateBar.textContent = msg;
-    // countdown + auto-dismiss
     rateBarTimer = setInterval(() => {
       const secs = waitSeconds();
       if (secs <= 0) {
@@ -424,7 +422,8 @@ YOUR BEHAVIOR:
     }, 1000);
   }
 
-  let chat = null;
+  let apiKey = null;
+  let history = []; // { role, content }
   let isStreaming = false;
 
   const chatWindow   = document.getElementById("chat-window");
@@ -437,14 +436,6 @@ YOUR BEHAVIOR:
   const modalError   = document.getElementById("modal-error");
   const modalSaveBtn = document.getElementById("modal-save-btn");
   const settingsBtn  = document.getElementById("settings-btn");
-
-  function initChat(apiKey) {
-    const ai = new GoogleGenAI({ apiKey });
-    chat = ai.chats.create({
-      model: MODEL,
-      config: { systemInstruction: SYSTEM_PROMPT },
-    });
-  }
 
   function openModal() {
     modalInput.value = "";
@@ -461,8 +452,8 @@ YOUR BEHAVIOR:
       modalError.classList.add("visible");
       return;
     }
-    localStorage.setItem("railnest_gemini_key", key);
-    initChat(key);
+    apiKey = key;
+    localStorage.setItem("railnest_groq_key", key);
     modal.classList.add("hidden");
     sendBtn.disabled = false;
     if (!chatWindow.children.length) greet();
@@ -474,9 +465,9 @@ YOUR BEHAVIOR:
   }
 
   // Boot
-  const savedKey = localStorage.getItem("railnest_gemini_key");
+  const savedKey = localStorage.getItem("railnest_groq_key");
   if (savedKey) {
-    initChat(savedKey);
+    apiKey = savedKey;
     modal.classList.add("hidden");
     sendBtn.disabled = false;
     greet();
@@ -510,7 +501,7 @@ YOUR BEHAVIOR:
 
   async function handleSend() {
     const text = userInput.value.trim();
-    if (!text || isStreaming || !chat) return;
+    if (!text || isStreaming || !apiKey) return;
 
     if (!canSend()) {
       showRateBar(`⚠ Rate limit — sending again in ${waitSeconds()}s (free tier: ${MAX_RPM} req/min).`);
@@ -524,36 +515,76 @@ YOUR BEHAVIOR:
     userInput.style.height = "auto";
 
     addUserMessage(text);
+    history.push({ role: "user", content: text });
     recordRequest();
-    await streamResponse(text);
+    await streamResponse();
   }
 
-  async function streamResponse(text) {
+  async function streamResponse() {
     isStreaming = true;
     sendBtn.disabled = true;
 
     const typingEl = addTypingIndicator();
 
     try {
-      const stream = await chat.sendMessageStream({ message: text });
+      const response = await fetch(GROQ_API_URL, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            ...history,
+          ],
+          stream: true,
+        }),
+      });
+
+      if (!response.ok) {
+        const errBody = await response.text();
+        throw new Error(`${response.status} ${errBody}`);
+      }
+
       typingEl.remove();
 
       let fullText = "";
       const botEl = addBotMessage("", true);
       const bubbleSpan = botEl.querySelector(".bubble-text");
 
-      for await (const chunk of stream) {
-        fullText += chunk.text ?? "";
-        bubbleSpan.innerHTML = markdownToHtml(fullText);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop();
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const data = line.slice(6).trim();
+          if (data === "[DONE]") break;
+          try {
+            const json = JSON.parse(data);
+            fullText += json.choices?.[0]?.delta?.content ?? "";
+            bubbleSpan.innerHTML = markdownToHtml(fullText);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+          } catch {}
+        }
       }
+
+      history.push({ role: "assistant", content: fullText });
 
     } catch (err) {
       typingEl?.remove();
       const msg = String(err?.message ?? "");
-      if (msg.includes("429") || msg.toLowerCase().includes("quota") || msg.toLowerCase().includes("rate")) {
+      if (msg.includes("429") || msg.toLowerCase().includes("rate")) {
         showRateBar(`⚠ Rate limit hit — sending again in ${waitSeconds()}s (free tier: ${MAX_RPM} req/min).`);
-      } else if (msg.includes("400") || msg.includes("API_KEY") || msg.includes("401") || msg.includes("403")) {
+      } else if (msg.includes("401") || msg.includes("403") || msg.toLowerCase().includes("invalid api key")) {
         addErrorMessage("Invalid API key — click the gear icon ⚙ to update it.");
       } else {
         addErrorMessage("Something went wrong — please try again.");
