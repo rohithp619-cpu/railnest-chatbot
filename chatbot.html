@@ -90,14 +90,6 @@
 
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-    #settings-btn {
-      background: none; border: 1px solid var(--border);
-      border-radius: 8px; width: 34px; height: 34px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; color: var(--muted); transition: all 0.15s;
-    }
-    #settings-btn:hover { border-color: var(--brass); color: var(--ink); }
-
     /* ── MODAL ──────────────────────────────── */
     .modal-overlay {
       position: fixed; inset: 0;
@@ -535,7 +527,7 @@ FORMATTING — always follow these rules:
       if (msg.includes("429") || msg.toLowerCase().includes("rate")) {
         showRateBar(`⚠ Rate limit hit — sending again in ${waitSeconds()}s (free tier: ${MAX_RPM} req/min).`);
       } else if (msg.includes("401") || msg.includes("403") || msg.toLowerCase().includes("invalid api key")) {
-        addErrorMessage("Invalid API key — click the gear icon ⚙ to update it.");
+        addErrorMessage("Invalid API key — please contact support.");
       } else {
         addErrorMessage("Something went wrong — please try again.");
       }
