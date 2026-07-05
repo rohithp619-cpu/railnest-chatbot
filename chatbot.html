@@ -209,11 +209,15 @@
       border-top-right-radius: 4px;
     }
 
-    .bubble p + p { margin-top: 7px; }
-    .bubble ul, .bubble ol { padding-left: 18px; margin-top: 5px; }
-    .bubble li { margin-bottom: 3px; }
-    .bubble strong { color: var(--mahogany); }
+    .bubble p { margin: 0 0 8px; }
+    .bubble p:last-child { margin-bottom: 0; }
+    .bubble ul, .bubble ol { padding-left: 18px; margin: 4px 0 8px; }
+    .bubble ul:last-child, .bubble ol:last-child { margin-bottom: 0; }
+    .bubble li { margin-bottom: 5px; line-height: 1.55; }
+    .bubble li::marker { color: var(--brass); }
+    .bubble strong { color: var(--mahogany); font-weight: 600; }
     .message.user .bubble strong { color: #f5d9a8; }
+    .bubble em { font-style: italic; color: var(--muted); }
     .bubble code {
       background: rgba(154,124,58,0.12); padding: 1px 5px;
       border-radius: 4px; font-family: monospace; font-size: 13px;
@@ -386,8 +390,14 @@ YOUR BEHAVIOR:
 - Always ask clarifying questions before recommending a seat type: Do they want privacy or social? Day or overnight? Views or historic charm?
 - Be warm and enthusiastic about rail travel. Use occasional gentle train idioms but don't overdo it.
 - For complaints about seat types after booking: empathize first, then apply the change/refund policy firmly but kindly.
-- Keep responses concise — 3–5 sentences max unless explaining seat types in detail.
-- Never make up route details, prices, or policies not listed above.`;
+- Keep responses concise — 2–3 short paragraphs max unless explaining seat types in detail.
+- Never make up route details, prices, or policies not listed above.
+
+FORMATTING — always follow these rules:
+- Use **bold** for every route name, seat type name, and key term on first mention.
+- When listing routes, seat types, or options, always use a markdown bullet list (- ). Never write them out as comma-separated prose.
+- When comparing two or more things, use a bullet per item with the name bolded at the start.
+- Keep each bullet tight — one line if possible.`;
 
   const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
   const MODEL        = "llama-3.3-70b-versatile";
@@ -636,16 +646,50 @@ YOUR BEHAVIOR:
   }
 
   function markdownToHtml(text) {
-    return text
+    // Escape HTML then apply inline formatting
+    const inline = s => s
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
       .replace(/\*(.+?)\*/g, "<em>$1</em>")
-      .replace(/`(.+?)`/g, "<code>$1</code>")
-      .replace(/^#{1,3} (.+)$/gm, "<strong>$1</strong>")
-      .replace(/^- (.+)$/gm, "<li>$1</li>")
-      .replace(/(<li>[\s\S]*?<\/li>)/g, "<ul>$1</ul>")
-      .replace(/\n\n/g, "</p><p>")
-      .replace(/\n/g, "<br>");
+      .replace(/`(.+?)`/g, "<code>$1</code>");
+
+    const lines = text.split("\n");
+    const out = [];
+    let inList = false;
+    let paraLines = [];
+
+    const flushPara = () => {
+      if (paraLines.length) {
+        out.push(`<p>${paraLines.join("<br>")}</p>`);
+        paraLines = [];
+      }
+    };
+
+    for (const raw of lines) {
+      const line = raw.trimEnd();
+      const listMatch = line.match(/^[-*•] (.+)/);
+      const headingMatch = line.match(/^#{1,3} (.+)/);
+
+      if (listMatch) {
+        flushPara();
+        if (!inList) { out.push("<ul>"); inList = true; }
+        out.push(`<li>${inline(listMatch[1])}</li>`);
+      } else {
+        if (inList) { out.push("</ul>"); inList = false; }
+        if (headingMatch) {
+          flushPara();
+          out.push(`<p><strong>${inline(headingMatch[1])}</strong></p>`);
+        } else if (line === "") {
+          flushPara();
+        } else {
+          paraLines.push(inline(line));
+        }
+      }
+    }
+
+    if (inList) out.push("</ul>");
+    flushPara();
+    return out.join("");
   }
 </script>
 </body>
